@@ -2,7 +2,7 @@
 
 WasteWise is a PHP and MySQL web application for waste segregation and local waste-management services. It provides waste-disposal guidance, collection schedules, illegal-dumping reports, and separate dashboards for residents, collectors, and administrators.
 
-## Features
+## Features 
 
 - Account registration, login, and role-based page routing
 - Waste search and segregation guidance for biodegradable, recyclable, residual, and hazardous items
