@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0; url=collector.php">
+    <script>window.location.replace("collector.php");</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WasteWise - Smart Waste Segregation Assistant</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f2f5f3;
+            color: #1e293b;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+
+        /* Interactive Map Background Styling */
+        .map-canvas {
+            background-color: #e5f0eb;
+            background-image: 
+                radial-gradient(#10b981 0.8px, transparent 0.8px),
+                linear-gradient(to right, #cfdfd6 1px, transparent 1px),
+                linear-gradient(to bottom, #cfdfd6 1px, transparent 1px);
+            background-size: 16px 16px, 32px 32px, 32px 32px;
+        }
+
+        .truck-transition {
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col lg:flex-row antialiased select-none">
+
+    <!-- Sidebar -->
+    <aside class="w-full lg:w-64 bg-white border-r border-slate-200/80 flex flex-col justify-between shrink-0 lg:min-h-screen z-20">
+        <div>
+            <!-- Header Logo -->
+            <div class="p-5 flex items-center space-x-3 border-b border-slate-100 lg:border-b-0">
+                <div class="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center text-brand-600 text-2xl shadow-sm">
+                    <i class="fa-solid fa-recycle"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-slate-800 leading-tight tracking-tight">WasteWise</h1>
+                    <p class="text-[10px] font-semibold text-slate-400 tracking-tight">Smart Waste Segregation Assistant</p>
+                </div>
+            </div>
+
+            <!-- Navigation Bar -->
+            <nav class="p-3 space-y-1">
+                <button id="nav-dashboard" onclick="setActiveNav('dashboard')" class="nav-item w-full text-left flex items-center space-x-3 px-4 py-3 rounded-xl bg-brand-100/80 text-brand-800 font-bold text-sm transition-all shadow-xs cursor-pointer">
+                    <i class="fa-solid fa-house w-5 text-center text-brand-600"></i>
+                    <span>Dashboard</span>
+                </button>
+
+                <button id="nav-route" onclick="setActiveNav('route')" class="nav-item w-full text-left flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-100 font-medium text-sm transition-all cursor-pointer">
+                    <i class="fa-solid fa-truck-fast w-5 text-center text-slate-400"></i>
+                    <span>Collection Route</span>
+                </button>
+
+                <button id="nav-schedule" onclick="setActiveNav('schedule')" class="nav-item w-full text-left flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-100 font-medium text-sm transition-all cursor-pointer">
+                    <i class="fa-regular fa-calendar-days w-5 text-center text-slate-400"></i>
+                    <span>Schedule</span>
+                </button>
+
+                <button id="nav-illegal-report" onclick="setActiveNav('illegal-report')" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-100 font-medium text-sm transition-all cursor-pointer">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-triangle-exclamation w-5 text-center text-slate-400"></i>
+                        <span>Illegal Report</span>
+                    </div>
+                    <span class="bg-red-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow-xs">2</span>
+                </button>
+
+                <button id="nav-reports" onclick="setActiveNav('reports')" class="nav-item w-full text-left flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-100 font-medium text-sm transition-all cursor-pointer">
+                    <i class="fa-regular fa-file-lines w-5 text-center text-slate-400"></i>
+                    <span>Reports</span>
+                </button>
+
+                <button id="nav-profile" onclick="setActiveNav('profile')" class="nav-item w-full text-left flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-100 font-medium text-sm transition-all cursor-pointer">
+                    <i class="fa-regular fa-user w-5 text-center text-slate-400"></i>
+                    <span>Profile</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Sidebar Banner -->
+        <div class="p-4 m-3 bg-emerald-50/80 border border-emerald-100 rounded-2xl relative overflow-hidden text-center">
+            <div class="relative z-10 flex flex-col items-center">
+                <svg class="w-32 h-24 drop-shadow-sm mb-1" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="15" y="40" width="20" height="40" fill="#a7f3d0" rx="2"/>
+                    <rect x="38" y="25" width="22" height="55" fill="#6ee7b7" rx="2"/>
+                    <rect x="63" y="45" width="18" height="35" fill="#a7f3d0" rx="2"/>
+                    <rect x="0" y="95" width="200" height="5" fill="#94a3b8" rx="2"/>
+                    <rect x="20" y="38" width="105" height="55" rx="8" fill="#16a34a"/>
+                    <path d="M20 38 L45 20 L110 38 Z" fill="#22c55e" opacity="0.4"/>
+                    <circle cx="72" cy="65" r="15" fill="#15803d"/>
+                    <path d="M72 54 L80 68 L64 68 Z" fill="#ffffff"/>
+                    <path d="M125 50 L160 50 L175 70 L175 93 L125 93 Z" fill="#22c55e"/>
+                    <path d="M132 56 L153 56 L162 70 L132 70 Z" fill="#e2e8f0"/>
+                    <circle cx="55" cy="95" r="13" fill="#1e293b"/>
+                    <circle cx="55" cy="95" r="5" fill="#94a3b8"/>
+                    <circle cx="145" cy="95" r="13" fill="#1e293b"/>
+                    <circle cx="145" cy="95" r="5" fill="#94a3b8"/>
+                </svg>
+                <p class="text-xs font-bold text-emerald-950 leading-snug">A cleaner tomorrow starts with you.</p>
+                <div class="w-8 h-1 bg-brand-500 rounded-full mt-2"></div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4 lg:p-7 space-y-6 overflow-y-auto max-w-[1550px] mx-auto">
+
+        <!-- Header -->
+        <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl lg:text-3xl font-bold text-slate-800 tracking-tight">Good morning, Juan!</h1>
+                <p class="text-slate-500 text-xs sm:text-sm font-medium mt-0.5">Here are your today's tasks and updates.</p>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-2.5 bg-white px-3.5 py-2 rounded-xl border border-slate-200/90 shadow-2xs text-xs font-semibold text-slate-700">
+                    <i class="fa-regular fa-calendar text-brand-600 text-sm"></i>
+                    <div>
+                        <span class="block text-[9px] text-slate-400 uppercase tracking-wider font-extrabold leading-none">Today</span>
+                        <span class="text-slate-700">Apr 28, 2026</span>
+                    </div>
+                </div>
+
+                <button onclick="alert('Walang bagong notipikasyon.')" class="relative p-2.5 bg-white border border-slate-200/90 hover:bg-slate-50 rounded-xl text-slate-600 cursor-pointer transition-all active:scale-95">
+                    <i class="fa-regular fa-bell text-base"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
+                </button>
+
+                <button onclick="alert('Profile ng User: Juan Dela Cruz (Collector)')" class="flex items-center space-x-2.5 bg-white p-1 pr-3 border border-slate-200/90 hover:bg-slate-50 rounded-full cursor-pointer transition-all active:scale-95">
+                    <div class="w-8 h-8 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold text-xs">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="text-left hidden sm:block">
+                        <p class="text-xs font-bold text-slate-800 leading-tight">Juan Dela Cruz</p>
+                        <p class="text-[10px] text-slate-400 font-medium leading-none">Collector</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-1"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Metrics Cards -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <div class="lg:col-span-9 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center space-x-3.5 hover:border-brand-300 transition-all cursor-pointer" onclick="setActiveNav('route')">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-100/80 flex items-center justify-center text-brand-600 text-lg shrink-0">
+                        <i class="fa-solid fa-truck"></i>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-slate-800 leading-none">5</p>
+                        <p class="text-xs font-medium text-slate-500 mt-1">Assigned Routes <span class="text-slate-400">(Today)</span></p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center space-x-3.5 hover:border-amber-300 transition-all cursor-pointer" onclick="setActiveNav('illegal-report')">
+                    <div class="w-11 h-11 rounded-xl bg-amber-100/80 flex items-center justify-center text-amber-600 text-lg shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-slate-800 leading-none">2</p>
+                        <p class="text-xs font-medium text-slate-500 mt-1">Illegal Reports <span class="text-slate-400">(Pending)</span></p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center space-x-3.5 hover:border-brand-300 transition-all cursor-pointer">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-100/80 flex items-center justify-center text-brand-600 text-lg shrink-0">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-slate-800 leading-none">12.5 <span class="text-xs font-semibold">tons</span></p>
+                        <p class="text-xs font-medium text-slate-500 mt-1">Total Collected <span class="text-slate-400">(This week)</span></p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center space-x-3.5 hover:border-brand-300 transition-all cursor-pointer">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-100/80 flex items-center justify-center text-brand-600 text-lg shrink-0">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-slate-800 leading-none">98%</p>
+                        <p class="text-xs font-medium text-slate-500 mt-1">Segregation Accuracy <span class="text-slate-400">(This week)</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3 bg-gradient-to-r from-emerald-600 to-green-500 rounded-2xl p-4 text-white flex items-center justify-between shadow-2xs">
+                <div>
+                    <h3 class="font-bold text-base leading-snug">Collect.<br>Segregate.<br>Make an Impact.</h3>
+                </div>
+                <div class="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shrink-0">
+                    <svg class="w-12 h-12 text-white" viewBox="0 0 100 100" fill="none">
+                        <circle cx="50" cy="35" r="18" fill="#ffffff"/>
+                        <path d="M20 85 C20 60, 35 52, 50 52 C65 52, 80 60, 80 85 Z" fill="#ffffff"/>
+                        <circle cx="70" cy="70" r="14" fill="#15803d"/>
+                        <path d="M70 62 L75 73 L65 73 Z" fill="#ffffff"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Collection Route Card with MAP -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-location-dot text-brand-600 text-base"></i>
+                            <h2 class="font-bold text-slate-800 text-base">Collection Route</h2>
+                        </div>
+                        <button onclick="alert('Ipinapakita ang lahat ng 5 collection routes.')" class="text-xs font-bold text-brand-600 hover:text-brand-700 cursor-pointer">View All Routes</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+                        <div class="md:col-span-5 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-slate-800">Route 1 - North District</span>
+                                <span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full">In Progress</span>
+                            </div>
+                            <p class="text-xs text-slate-400 font-semibold">8:00 AM – 12:00 PM</p>
+
+                            <!-- Route Steps -->
+                            <div class="space-y-2 mt-2 text-xs">
+                                <button id="route-step-1" onclick="selectMapStop(1)" class="route-step-btn w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 cursor-pointer hover:bg-emerald-50/80 transition-all active:scale-[0.98]">
+                                    <div class="flex items-center space-x-2.5">
+                                        <span class="step-badge w-5 h-5 rounded-full bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center">1</span>
+                                        <span class="font-semibold text-slate-700">Rizal St. <span class="text-slate-400 font-normal">(Biodegradable)</span></span>
+                                    </div>
+                                    <i class="fa-solid fa-check text-emerald-600 text-xs"></i>
+                                </button>
+
+                                <button id="route-step-2" onclick="selectMapStop(2)" class="route-step-btn w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 cursor-pointer hover:bg-emerald-50/80 transition-all active:scale-[0.98]">
+                                    <div class="flex items-center space-x-2.5">
+                                        <span class="step-badge w-5 h-5 rounded-full bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center">2</span>
+                                        <span class="font-semibold text-slate-700">Bonifacio Ave. <span class="text-slate-400 font-normal">(Recyclable)</span></span>
+                                    </div>
+                                    <i class="fa-solid fa-check text-emerald-600 text-xs"></i>
+                                </button>
+
+                                <button id="route-step-3" onclick="selectMapStop(3)" class="route-step-btn w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 cursor-pointer transition-all active:scale-[0.98]">
+                                    <div class="flex items-center space-x-2.5">
+                                        <span class="step-badge w-5 h-5 rounded-full bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center">3</span>
+                                        <span class="font-bold text-emerald-900">Mabini St. <span class="text-slate-500 font-normal">(Residual)</span></span>
+                                    </div>
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                </button>
+
+                                <button id="route-step-4" onclick="selectMapStop(4)" class="route-step-btn w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 cursor-pointer hover:bg-emerald-50/80 transition-all active:scale-[0.98]">
+                                    <div class="flex items-center space-x-2.5">
+                                        <span class="step-badge w-5 h-5 rounded-full bg-slate-300 text-slate-600 font-bold text-[10px] flex items-center justify-center">4</span>
+                                        <span class="font-medium text-slate-600">Aguinaldo St. <span class="text-slate-400 font-normal">(Recyclable)</span></span>
+                                    </div>
+                                    <span class="w-2 h-2 rounded-full bg-slate-300"></span>
+                                </button>
+
+                                <button id="route-step-5" onclick="selectMapStop(5)" class="route-step-btn w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 cursor-pointer hover:bg-emerald-50/80 transition-all active:scale-[0.98]">
+                                    <div class="flex items-center space-x-2.5">
+                                        <span class="step-badge w-5 h-5 rounded-full bg-slate-300 text-slate-600 font-bold text-[10px] flex items-center justify-center">5</span>
+                                        <span class="font-medium text-slate-600">OSMEÑA Rd. <span class="text-slate-400 font-normal">(Hazardous)</span></span>
+                                    </div>
+                                    <span class="w-2 h-2 rounded-full bg-slate-300"></span>
+                                </button>
+                            </div>
+
+                            <button onclick="alert('Detalye ng Route 1 - North District.')" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center space-x-2 mt-3 cursor-pointer active:scale-95">
+                                <span>View Details</span>
+                                <i class="fa-solid fa-arrow-right text-[11px]"></i>
+                            </button>
+                        </div>
+
+                        <!-- MAP DISPLAY AREA -->
+                        <div class="md:col-span-7 min-h-[300px] h-full rounded-2xl map-canvas relative overflow-hidden border border-emerald-300 shadow-inner flex items-center justify-center p-4">
+                            <!-- Route Line Path SVG -->
+                            <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 300 240" fill="none">
+                                <path d="M40 180 L80 140 L160 110 L210 50 L250 120 L180 200 L120 180 Z" stroke="#16a34a" stroke-width="4" stroke-dasharray="6 4" />
+                            </svg>
+
+                            <!-- Route Stop 1 -->
+                            <button onclick="selectMapStop(1)" class="absolute top-[170px] left-[35px] cursor-pointer hover:scale-125 transition-transform z-10">
+                                <span class="w-7 h-7 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-lg ring-2 ring-white">1</span>
+                            </button>
+
+                            <!-- Route Stop 2 -->
+                            <button onclick="selectMapStop(2)" class="absolute top-[130px] left-[75px] cursor-pointer hover:scale-125 transition-transform z-10">
+                                <span class="w-7 h-7 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-lg ring-2 ring-white">2</span>
+                            </button>
+
+                            <!-- Active Moving Garbage Truck -->
+                            <div id="truck-map-pin" class="absolute top-[100px] left-[150px] flex flex-col items-center z-20 truck-transition">
+                                <div class="w-9 h-9 rounded-full bg-brand-600 text-white flex items-center justify-center ring-4 ring-emerald-200 shadow-xl">
+                                    <i class="fa-solid fa-truck text-sm"></i>
+                                </div>
+                            </div>
+
+                            <!-- Route Stop 4 -->
+                            <button onclick="selectMapStop(4)" class="absolute top-[40px] left-[200px] cursor-pointer hover:scale-125 transition-transform z-10">
+                                <span class="w-7 h-7 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-lg ring-2 ring-white">4</span>
+                            </button>
+
+                            <!-- Route Stop 5 -->
+                            <button onclick="selectMapStop(5)" class="absolute top-[190px] left-[170px] cursor-pointer hover:scale-125 transition-transform z-10">
+                                <span class="w-7 h-7 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-lg ring-2 ring-white">5</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Illegal Report Notifications (WITH REAL IMAGES & CLICKABLE) -->
+            <div class="lg:col-span-5 space-y-4">
+                <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-triangle-exclamation text-red-500 text-base"></i>
+                            <h2 class="font-bold text-slate-800 text-base">Illegal Report Notifications</h2>
+                        </div>
+                        <button onclick="alert('Ipinapakita ang lahat ng ulat.')" class="text-xs font-bold text-slate-400 hover:text-slate-600 cursor-pointer">View All</button>
+                    </div>
+
+                    <!-- Report Item 1 (Clickable & Real Image) -->
+                    <div onclick="alert('Binubuksan ang ulat: Illegal Dumping sa Lapu-Lapu Elementary School')" class="p-3.5 bg-red-50/60 hover:bg-red-100/70 rounded-2xl border border-red-200/90 flex items-center justify-between cursor-pointer transition-all active:scale-[0.98]">
+                        <div class="flex items-center space-x-3">
+                            <img src="https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=150&q=80" alt="Illegal Dumping" class="w-14 h-14 rounded-xl object-cover shrink-0 border border-red-200 shadow-xs" />
+                            <div>
+                                <h4 class="font-bold text-xs text-slate-800">Illegal Dumping Report</h4>
+                                <p class="text-[10px] text-slate-400 font-semibold mt-0.5">Apr 28, 2026 • 8:15 AM</p>
+                                <p class="text-[11px] font-medium text-slate-600 mt-0.5">Near Lapu-Lapu Elementary School</p>
+                            </div>
+                        </div>
+                        <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0">High Priority</span>
+                    </div>
+
+                    <!-- Report Item 2 (Clickable & Real Image) -->
+                    <div onclick="alert('Binubuksan ang ulat: Wrong Segregation sa M.L. Quezon St.')" class="p-3.5 bg-amber-50/60 hover:bg-amber-100/70 rounded-2xl border border-amber-200/90 flex items-center justify-between cursor-pointer transition-all active:scale-[0.98]">
+                        <div class="flex items-center space-x-3">
+                            <img src="https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=150&q=80" alt="Wrong Segregation" class="w-14 h-14 rounded-xl object-cover shrink-0 border border-amber-200 shadow-xs" />
+                            <div>
+                                <h4 class="font-bold text-xs text-slate-800">Wrong Segregation Report</h4>
+                                <p class="text-[10px] text-slate-400 font-semibold mt-0.5">Apr 28, 2026 • 7:42 AM</p>
+                                <p class="text-[11px] font-medium text-slate-600 mt-0.5">Along M.L. Quezon St.</p>
+                            </div>
+                        </div>
+                        <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0">In Progress</span>
+                    </div>
+
+                    <!-- Tracking Timeline -->
+                    <div class="pt-2 border-t border-slate-100">
+                        <h4 class="text-xs font-bold text-slate-700 mb-3">Tracking Status</h4>
+                        <div class="flex items-center justify-between relative px-2">
+                            <div class="absolute left-6 right-6 top-4 h-0.5 bg-emerald-200 -z-0"></div>
+
+                            <div class="flex flex-col items-center z-10">
+                                <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">
+                                    <i class="fa-solid fa-file-invoice"></i>
+                                </div>
+                                <span class="text-[9px] font-bold text-slate-700 mt-1">Report Submitted</span>
+                                <span class="text-[8px] text-slate-400">8:15 AM</span>
+                            </div>
+
+                            <div class="flex flex-col items-center z-10">
+                                <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shadow-xs">
+                                    <i class="fa-solid fa-user-check"></i>
+                                </div>
+                                <span class="text-[9px] font-bold text-emerald-700 mt-1">Collector Assigned</span>
+                                <span class="text-[8px] text-slate-400">8:20 AM</span>
+                            </div>
+
+                            <div class="flex flex-col items-center z-10">
+                                <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">
+                                    <i class="fa-solid fa-truck-moving"></i>
+                                </div>
+                                <span class="text-[9px] font-bold text-slate-700 mt-1">On the Way</span>
+                                <span class="text-[8px] text-slate-400">8:35 AM</span>
+                            </div>
+
+                            <div class="flex flex-col items-center z-10">
+                                <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                </div>
+                                <span class="text-[9px] font-bold text-slate-700 mt-1">Issue Resolved</span>
+                                <span class="text-[8px] text-slate-400">10:10 AM</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-emerald-50/60 rounded-xl border border-emerald-100 flex items-start space-x-2.5">
+                            <i class="fa-solid fa-circle-check text-brand-600 text-sm mt-0.5 shrink-0"></i>
+                            <p class="text-xs text-slate-600 leading-snug">The collector is on the way to the location. The illegal waste will be collected and properly segregated based on its type.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Tables -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-regular fa-rectangle-list text-brand-600 text-base"></i>
+                        <h2 class="font-bold text-slate-800 text-base">Today's Tasks</h2>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="text-slate-400 border-b border-slate-100 font-semibold">
+                                <th class="pb-3 pl-2">Time</th>
+                                <th class="pb-3">Location</th>
+                                <th class="pb-3">Type</th>
+                                <th class="pb-3">Status</th>
+                                <th class="pb-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700 font-medium">
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 pl-2 font-semibold">8:00 AM - 9:00 AM</td>
+                                <td class="py-3">Rizal St.</td>
+                                <td class="py-3">Biodegradable</td>
+                                <td class="py-3"><span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-bold text-[10px]">Completed</span></td>
+                                <td class="py-3 text-center"><button onclick="alert('Detalye: Rizal St.')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-bold text-[11px] cursor-pointer">View</button></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 pl-2 font-semibold">9:15 AM - 10:15 AM</td>
+                                <td class="py-3">Bonifacio Ave.</td>
+                                <td class="py-3">Recyclable</td>
+                                <td class="py-3"><span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-bold text-[10px]">Completed</span></td>
+                                <td class="py-3 text-center"><button onclick="alert('Detalye: Bonifacio Ave.')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-bold text-[11px] cursor-pointer">View</button></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 pl-2 font-semibold">10:30 AM - 11:30 AM</td>
+                                <td class="py-3">Mabini St.</td>
+                                <td class="py-3">Residual</td>
+                                <td class="py-3"><span class="bg-sky-100 text-sky-700 px-2.5 py-1 rounded-full font-bold text-[10px]">In Progress</span></td>
+                                <td class="py-3 text-center"><button onclick="alert('Detalye: Mabini St.')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-bold text-[11px] cursor-pointer">View</button></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 pl-2 font-semibold">11:45 AM - 12:00 PM</td>
+                                <td class="py-3">Aguinaldo St.</td>
+                                <td class="py-3">Recyclable</td>
+                                <td class="py-3"><span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold text-[10px]">Pending</span></td>
+                                <td class="py-3 text-center"><button onclick="alert('Detalye: Aguinaldo St.')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-bold text-[11px] cursor-pointer">View</button></td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 pl-2 font-semibold">1:00 PM - 2:00 PM</td>
+                                <td class="py-3">OSMEÑA Rd.</td>
+                                <td class="py-3">Hazardous</td>
+                                <td class="py-3"><span class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold text-[10px]">Pending</span></td>
+                                <td class="py-3 text-center"><button onclick="alert('Detalye: OSMEÑA Rd.')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-bold text-[11px] cursor-pointer">View</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 p-5 shadow-2xs space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-regular fa-file-lines text-brand-600 text-base"></i>
+                        <h2 class="font-bold text-slate-800 text-base">Recent Illegal Reports</h2>
+                    </div>
+                    <button onclick="alert('Tingnan ang lahat ng ulat.')" class="text-xs font-bold text-slate-400 hover:text-slate-600 cursor-pointer">View All</button>
+                </div>
+
+                <div class="space-y-3">
+                    <div onclick="alert('Tinitingnan ang Illegal Dumping')" class="p-3 rounded-xl border border-slate-200/80 flex items-center justify-between hover:bg-slate-50 cursor-pointer transition-all active:scale-[0.98]">
+                        <div class="flex items-center space-x-3">
+                            <img src="https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=150&q=80" alt="Illegal Dumping" class="w-12 h-12 rounded-xl object-cover shrink-0 border border-slate-200" />
+                            <div>
+                                <h4 class="font-bold text-xs text-slate-800">Illegal Dumping</h4>
+                                <p class="text-[10px] text-slate-400 font-semibold">Apr 28, 2026 • 8:15 AM</p>
+                                <p class="text-[11px] text-slate-500 font-medium">Near Lapu-Lapu Elementary School</p>
+                            </div>
+                        </div>
+                        <span class="bg-sky-100 text-sky-700 font-bold text-[10px] px-2.5 py-1 rounded-full">In Progress</span>
+                    </div>
+
+                    <div onclick="alert('Tinitingnan ang Mixed Waste')" class="p-3 rounded-xl border border-slate-200/80 flex items-center justify-between hover:bg-slate-50 cursor-pointer transition-all active:scale-[0.98]">
+                        <div class="flex items-center space-x-3">
+                            <img src="https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=150&q=80" alt="Mixed Waste" class="w-12 h-12 rounded-xl object-cover shrink-0 border border-slate-200" />
+                            <div>
+                                <h4 class="font-bold text-xs text-slate-800">Mixed Waste</h4>
+                                <p class="text-[10px] text-slate-400 font-semibold">Apr 28, 2026 • 7:42 AM</p>
+                                <p class="text-[11px] text-slate-500 font-medium">Along M.L. Quezon St.</p>
+                            </div>
+                        </div>
+                        <span class="bg-amber-100 text-amber-700 font-bold text-[10px] px-2.5 py-1 rounded-full">Assigned</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Script -->
+    <script>
+        const stopPositions = {
+            1: { top: '170px', left: '35px' },
+            2: { top: '130px', left: '75px' },
+            3: { top: '100px', left: '150px' },
+            4: { top: '40px', left: '200px' },
+            5: { top: '190px', left: '170px' }
+        };
+
+        function selectMapStop(stopNum) {
+            const truckPin = document.getElementById('truck-map-pin');
+            if (truckPin && stopPositions[stopNum]) {
+                truckPin.style.top = stopPositions[stopNum].top;
+                truckPin.style.left = stopPositions[stopNum].left;
+            }
+
+            const steps = document.querySelectorAll('.route-step-btn');
+            steps.forEach((btn, idx) => {
+                const stepIndex = idx + 1;
+                if (stepIndex === stopNum) {
+                    btn.className = "route-step-btn w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 cursor-pointer transition-all shadow-2xs";
+                } else {
+                    btn.className = "route-step-btn w-full text-left flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 cursor-pointer hover:bg-emerald-50/80 transition-all";
+                }
+            });
+        }
+
+        function setActiveNav(navId) {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('bg-brand-100/80', 'text-brand-800', 'font-bold');
+                item.classList.add('text-slate-600', 'font-medium');
+            });
+
+            const activeItem = document.getElementById('nav-' + navId);
+            if (activeItem) {
+                activeItem.classList.add('bg-brand-100/80', 'text-brand-800', 'font-bold');
+                activeItem.classList.remove('text-slate-600', 'font-medium');
+            }
+        }
+    </script>
+</body>
+</html>

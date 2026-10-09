@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="refresh" content="0; url=dashboard.php">
+  <script>window.location.replace("dashboard.php");</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Waste Wise · Eco Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  
+</head>
+<body>
+  <div class="container">
+    <header class="navbar">
+      <div class="logo">
+        <i class="fa-solid fa-leaf logo-icon"></i>
+        <div>
+          <h1>Waste<span>Wise</span></h1>
+          <small>Smart Waste Segregation Assistant</small>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <a href="#home" class="nav-item"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="#search-result" class="nav-item active"><i class="fa-solid fa-bolt"></i> Wise Search</a>
+        <a href="#schedule" class="nav-item"><i class="fa-regular fa-calendar"></i> Schedule</a>
+        <a href="#community" class="nav-item"><i class="fa-solid fa-people-group"></i> Community</a>
+        <a href="#profile" class="nav-item"><i class="fa-regular fa-user"></i> Profile</a>
+        <a href="#profile" class="nav-profile" title="View profile">
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='50' fill='%232d7a4a'/%3E%3Cpath d='M50 20C30 35 28 60 50 84 72 60 70 35 50 20Z' fill='%23eaf7ee'/%3E%3Cpath d='M50 26V80M50 46L36 56M50 46L64 56M50 62L38 70M50 62L62 70' stroke='%232d7a4a' stroke-width='3' stroke-linecap='round' fill='none'/%3E%3C/svg%3E" alt="avatar" id="navAvatar">
+          <span class="points"><i class="fa-solid fa-star"></i> 2,450</span>
+        </a>
+      </nav>
+    </header>
+
+    <section class="hero-section" id="home">
+      <div class="hero-text">
+        <h2>Hello, Waste Warrior </h2>
+        <p>Small actions today, greener tomorrow.</p>
+      </div>
+    </section>
+
+    <section class="section" id="quick-actions">
+      <div class="section-title">
+        <i class="fa-solid fa-bolt" style="color:#2d7a4a;"></i> Quick Actions
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-icon green-bg"><i class="fa-solid fa-book-open"></i></div>
+          <h4>Recycle Guide</h4>
+          <p>Learn how to segregate waste properly.</p>
+          <button class="card-action" data-guide="biodegradable">Learn more <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+
+        <div class="card">
+          <div class="card-icon yellow-bg"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <h4>Report Illegal Dumping</h4>
+          <p>Help keep our community clean.</p>
+          <button class="card-action" id="openReportBtn">Report now <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+
+        <div class="card">
+          <div class="card-icon blue-bg"><i class="fa-solid fa-calendar-alt"></i></div>
+          <h4>Collection Schedule</h4>
+          <p>View garbage collection dates.</p>
+          <button class="card-action" id="openSchedulePreviewBtn">Learn more <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+
+        <div class="card">
+          <div class="card-icon purple-bg"><i class="fa-solid fa-earth-asia"></i></div>
+          <h4>Climate Action Tips</h4>
+          <p>Batteries, chemicals, e-waste, etc.</p>
+          <button class="card-action" id="openClimateBtn">Learn more <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="our-impact">
+      <div class="section-title">
+        <i class="fa-solid fa-chart-simple" style="color:#2d7a4a;"></i> Our Impact
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="fa-solid fa-recycle"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Items Recycled</span>
+            <span class="stat-number">5,240</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon blue"><i class="fa-solid fa-circle-exclamation"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Reports Submitted</span>
+            <span class="stat-number" id="reportCount">300</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon yellow"><i class="fa-solid fa-bullseye"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Recycling Centers</span>
+            <span class="stat-number">18</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon teal"><i class="fa-solid fa-users"></i></div>
+          <div class="stat-info">
+            <span class="stat-label">Community Volunteers</span>
+            <span class="stat-number">500</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="search-result">
+      <div class="section-title">
+        <i class="fa-solid fa-magnifying-glass" style="color:#2d7a4a;"></i> Wise Search
+      </div>
+
+      <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="wiseSearchInput" placeholder="Search an item — e.g. plastic bottle, battery, banana peel…" autocomplete="off">
+        <button class="search-btn" id="wiseSearchBtn">Search</button>
+      </div>
+
+      <!-- ===== BROWSE BY CATEGORY ===== -->
+      <div class="browse-category-wrap">
+        <h3 class="browse-category-title">Browse by category</h3>
+        <div class="browse-category-grid">
+          <div class="browse-card" data-guide="biodegradable">
+            <div class="browse-card-icon green-bg"><i class="fa-solid fa-leaf"></i></div>
+            <h4>Biodegradable</h4>
+            <p>Food, plants, paper, etc.</p>
+            <span class="browse-link">Learn more <i class="fa-solid fa-arrow-right"></i></span>
+          </div>
+
+          <div class="browse-card" data-guide="recyclable">
+            <div class="browse-card-icon yellow-bg"><i class="fa-solid fa-recycle"></i></div>
+            <h4>Recyclable</h4>
+            <p>Plastic, glass, metal, paper</p>
+            <span class="browse-link">Learn more <i class="fa-solid fa-arrow-right"></i></span>
+          </div>
+
+          <div class="browse-card" data-guide="residual">
+            <div class="browse-card-icon blue-bg"><i class="fa-solid fa-trash-can"></i></div>
+            <h4>Residual</h4>
+            <p>Non-recyclable waste</p>
+            <span class="browse-link">Learn more <i class="fa-solid fa-arrow-right"></i></span>
+          </div>
+
+          <div class="browse-card" data-guide="hazardous">
+            <div class="browse-card-icon purple-bg"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <h4>Hazardous</h4>
+            <p>Batteries, chemicals, e-waste, etc.</p>
+            <span class="browse-link">Learn more <i class="fa-solid fa-arrow-right"></i></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section-wrapper" id="searchResult">
+        <div class="detail-container">
+          <div class="item-card-left">
+            <div class="item-visual" id="itemVisual"></div>
+            <div class="details-content">
+              <h2 id="itemName">Plastic Bottle</h2>
+              <div class="category-text">Category: <span id="itemCategory">Recyclable</span></div>
+              <h4>Where to throw:</h4>
+              <p id="itemWhere">Rinse and dispose in the Yellow Bin for recyclables.</p>
+              <button class="find-center-btn" id="findCenterBtn">
+                <i class="fa-solid fa-location-crosshairs"></i> Find Recycling Centers Near You
+              </button>
+            </div>
+          </div>
+
+          <div class="item-card-right">
+            <div class="steps-content-wrapper">
+              <ul class="steps-list" id="stepsList"></ul>
+              <div class="bin-visual" id="binVisual"></div>
+            </div>
+            <div class="pagination-dots" id="categoryDots">
+              <div class="dot" data-cat="biodegradable" title="Biodegradable"></div>
+              <div class="dot active" data-cat="recyclable" title="Recyclable"></div>
+              <div class="dot" data-cat="residual" title="Residual"></div>
+              <div class="dot" data-cat="hazardous" title="Hazardous"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="schedule">
+      <div class="section-title">
+        <i class="fa-regular fa-calendar" style="color:#2d7a4a;"></i> Collection Schedule
+      </div>
+
+      <div class="schedule-dashboard">
+        <div class="schedule-left-sidebar">
+          <div class="schedule-legend-box">
+            <h4>Collection Week</h4>
+            <div class="legend-item" data-legend="biodegradable"><span class="legend-circle circle-green"></span> Sunday and Monday — Biodegradable</div>
+            <div class="legend-item" data-legend="recyclable"><span class="legend-circle circle-yellow"></span> Tuesday and Thursday — Recyclable</div>
+            <div class="legend-item" data-legend="residual"><span class="legend-circle circle-blue"></span> Wednesday and Saturday — Residual</div>
+            <div class="legend-item" data-legend="hazardous"><span class="legend-circle circle-red"></span> Friday — Hazardous</div>
+          </div>
+
+          <div class="schedule-location-box">
+            <h4>Select Your Location</h4>
+            <label for="citySelect" style="font-size: 0.75rem; color: #666; display: block; margin-bottom: 0.2rem;">City / Municipality</label>
+            <select class="select-field" id="citySelect">
+              <option>Lapu-Lapu City</option>
+              <option>Cebu City</option>
+              <option>Mandaue City</option>
+            </select>
+
+            <label for="brgySelect" style="font-size: 0.75rem; color: #666; display: block; margin-bottom: 0.2rem;">Barangay</label>
+            <select class="select-field" id="brgySelect">
+              <option>Subabasbas</option>
+              <option>Basak</option>
+              <option>Marigondon</option>
+              <option>Pajo</option>
+            </select>
+
+            <button class="view-btn" id="viewScheduleBtn">View Schedule</button>
+          </div>
+        </div>
+
+        <div class="schedule-calendar-center">
+          <div class="calendar-header">
+            <i class="fa-solid fa-chevron-left" id="prevMonth" role="button" aria-label="Previous month"></i>
+            <span id="calMonthLabel">May 2026</span>
+            <i class="fa-solid fa-chevron-right" id="nextMonth" role="button" aria-label="Next month"></i>
+          </div>
+          <div class="calendar-sub" id="calendarSub">Subabasbas, Lapu-Lapu City</div>
+
+          <div class="calendar-grid" id="calendarGrid"></div>
+
+          <div style="margin-top: 1.2rem; border-top: 1px solid #eee; padding-top: 0.8rem; display: flex; gap: 1rem; font-size: 0.75rem; flex-wrap: wrap;">
+            <span><strong>LEGEND:</strong></span>
+            <span style="color: #208e3a;">● Biodegradable</span>
+            <span style="color: #e8b32a;">● Recyclable</span>
+            <span style="color: #1b659c;">● Residual</span>
+            <span style="color: #d64a3b;">● Hazardous</span>
+          </div>
+        </div>
+
+        <div class="schedule-right-sidebar">
+          <h4 style="font-size: 0.95rem; color: #1a402b;">Upcoming Collections</h4>
+          <div id="upcomingList" style="display:flex;flex-direction:column;gap:1rem;"></div>
+
+          <button class="view-btn" id="viewAllUpcomingBtn" style="margin-top: 0.5rem;">
+            View All <i class="fa-solid fa-arrow-right"></i>
+          </button>
+
+          <div class="reminder-toggle" id="reminderToggle">
+            <div>
+              <h5 style="font-size: 0.85rem; color: #1a402b;">Reminder</h5>
+              <p style="font-size: 0.7rem; color: #666;">Get notified before collection</p>
+            </div>
+            <i class="fa-regular fa-bell-slash" id="reminderIcon" style="font-size: 1.2rem; color: #888;"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="community">
+      <div class="section-title">
+        <i class="fa-solid fa-people-group" style="color:#2d7a4a;"></i> Community
+      </div>
+
+      <div class="community-grid">
+        <div class="community-panel">
+          <h3><i class="fa-solid fa-hands-holding-circle"></i> Community Activities</h3>
+          
+          <div class="activity-item-row">
+            <div class="activity-item-info">
+              <div class="activity-item-icon green"><i class="fa-solid fa-tree"></i></div>
+              <div class="activity-item-text">
+                <h5>Tree Planting Activity</h5>
+                <p>July 29, 2026 • 8:00 AM<br>Green Park City Center</p>
+              </div>
+            </div>
+            <button class="join-activity-btn" data-activity="Tree Planting">Join Activity</button>
+          </div>
+
+          <div class="activity-item-row">
+            <div class="activity-item-info">
+              <div class="activity-item-icon blue"><i class="fa-solid fa-broom"></i></div>
+              <div class="activity-item-text">
+                <h5>Clean-Up Drive</h5>
+                <p>Aug 10, 2026 • 7:00 AM<br>Riverside Area</p>
+              </div>
+            </div>
+            <button class="join-activity-btn" data-activity="Clean-Up Drive">Join Activity</button>
+          </div>
+
+          <a href="#" class="view-all-link">View All Activities <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <div class="community-panel">
+          <h3><i class="fa-solid fa-bullhorn"></i> Community Announcements</h3>
+
+          <div class="announcement-item">
+            <div class="announcement-icon"><i class="fa-solid fa-recycle"></i></div>
+            <div class="announcement-text">
+              <h5>Proper Segregation Reminder</h5>
+              <p>Please separate biodegradable, recyclable, residual, and hazardous waste before collection.</p>
+            </div>
+          </div>
+
+          <div class="announcement-item">
+            <div class="announcement-icon"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="announcement-text">
+              <h5>Collection Schedule Update</h5>
+              <p>New collection schedules are now available. Check the Collection Schedule page.</p>
+            </div>
+          </div>
+
+          <a href="#" class="view-all-link">View All Announcements <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="community-banner">
+        <div class="community-banner-text">
+          <i class="fa-solid fa-recycle"></i>
+          <h3>Together we can build a<br>cleaner, greener, and more resilient community.</h3>
+        </div>
+        <div class="community-banner-image-wrap">
+          <img src="data:image/jpeg;base64,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" alt="Community members cleaning up" class="community-banner-img">
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="profile">
+      <div class="section-title">
+        <i class="fa-regular fa-user" style="color:#2d7a4a;"></i> Profile
+      </div>
+      <div class="profile-layout">
+
+        <div class="profile-sidebar">
+          <div class="profile-card">
+            <div class="profile-avatar" id="profileAvatar">
+              <svg viewBox="0 0 100 100" width="72" height="72" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Profile avatar">
+                <circle cx="50" cy="50" r="50" fill="#dff0e6"/>
+                <circle cx="50" cy="38" r="16" fill="#2d7a4a"/>
+                <path d="M50 62c-15 0-27 11-29 25 8 6 18 9 29 9s21-3 29-9c-2-14-14-25-29-25z" fill="#2d7a4a"/>
+              </svg>
+            </div>
+            <div class="profile-name" id="profileName">Waste Warrior</div>
+            <div class="profile-email" id="profileEmail">waste.warrior@email.com</div>
+
+            <div class="profile-points">
+              <i class="fa-solid fa-leaf"></i> 245 Eco Points
+            </div>
+
+            <div class="profile-level">
+              <div class="profile-level-header">
+                <span>Level 4</span>
+                <span>Green Protector</span>
+              </div>
+              <div class="profile-progress-bar">
+                <div class="profile-progress-fill"></div>
+              </div>
+              <div style="text-align: center; font-size: 0.7rem; color: #6b8a78; margin-bottom: 0.5rem;">2,450 / 3,000 XP</div>
+            </div>
+
+            <button class="edit-profile-btn" id="editProfileBtn">Edit Profile</button>
+          </div>
+
+          <div class="profile-quote">
+            <i class="fa-solid fa-quote-left"></i>
+            <div>
+              Every action counts. Every waste matters. Together, we can build a greener future.
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-main">
+          <h2>My Waste Activity</h2>
+
+          <div class="activity-stats">
+            <div class="activity-stat-card">
+              <div class="activity-stat-icon green"><i class="fa-solid fa-recycle"></i></div>
+              <div class="activity-stat-info">
+                <h4>24.5 kg</h4>
+                <p>Waste Recycled<br>This Month</p>
+              </div>
+            </div>
+            <div class="activity-stat-card">
+              <div class="activity-stat-icon blue"><i class="fa-solid fa-trash-can"></i></div>
+              <div class="activity-stat-info">
+                <h4>18</h4>
+                <p>Items Sorted<br>This Month</p>
+              </div>
+            </div>
+            <div class="activity-stat-card">
+              <div class="activity-stat-icon yellow"><i class="fa-solid fa-leaf"></i></div>
+              <div class="activity-stat-info">
+                <h4>87%</h4>
+                <p>Properly Segregated<br>This Month</p>
+              </div>
+            </div>
+          </div>
+
+          <h2>My Achievements</h2>
+          <div class="achievements-grid">
+            <div class="achievement-card">
+              <div class="achievement-icon"><i class="fa-solid fa-seedling"></i></div>
+              <div class="achievement-info">
+                <h5>Eco Starter</h5>
+                <p>You started your eco-friendly journey.</p>
+              </div>
+            </div>
+            <div class="achievement-card">
+              <div class="achievement-icon"><i class="fa-solid fa-recycle"></i></div>
+              <div class="achievement-info">
+                <h5>Recycling Hero</h5>
+                <p>Great job recycling regularly.</p>
+              </div>
+            </div>
+            <div class="achievement-card">
+              <div class="achievement-icon"><i class="fa-solid fa-trash-can"></i></div>
+              <div class="achievement-info">
+                <h5>Waste Wise</h5>
+                <p>You segregate waste the right way!</p>
+              </div>
+            </div>
+          </div>
+
+          <h2>Recent Activity</h2>
+          <div class="activity-list" id="activityList">
+            <div class="activity-item">
+              <div class="activity-item-left">
+                <i class="fa-solid fa-check-circle"></i>
+                <span>Recycled plastic bottle</span>
+              </div>
+              <div class="activity-date">
+                <i class="fa-regular fa-calendar"></i> Today
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-item-left">
+                <i class="fa-solid fa-check-circle"></i>
+                <span>Properly segregated household waste</span>
+              </div>
+              <div class="activity-date">
+                <i class="fa-regular fa-calendar"></i> Yesterday
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-item-left">
+                <i class="fa-solid fa-check-circle"></i>
+                <span>Joined Clean-Up Drive</span>
+              </div>
+              <div class="activity-date">
+                <i class="fa-regular fa-calendar"></i> Aug 10, 2026
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div style="text-align:center; width:100%; margin-bottom:.4rem;">© 2026 WasteWise · Smart Waste Segregation Assistant</div>
+      <div style="display:flex; justify-content:center; width:100%;">
+        <a data-info="privacy">Privacy Policy</a>
+        <a data-info="terms">Terms of Service</a>
+        <a data-info="help">Help Center</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <div class="guide-modal-overlay" id="guideModal" role="dialog" aria-modal="true">
+    <div class="guide-modal">
+      <button class="guide-close" id="guideClose" aria-label="Close guide">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <aside class="guide-sidebar" id="guideSidebar"></aside>
+      <div class="guide-main" id="guideMainContent"></div>
+    </div>
+  </div>
+
+  <div class="climate-modal-overlay" id="climateModal" role="dialog" aria-modal="true">
+    <div class="climate-modal">
+      <button class="climate-close" id="climateClose" aria-label="Close guide">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h2 class="climate-modal-title">Climate Action Tips</h2>
+
+      <div class="climate-scroll-container">
+        <div class="climate-card">
+          <div class="climate-card-img">
+            <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+              <rect x="40" y="8" width="20" height="12" rx="3" fill="#1f6d8f"/>
+              <path d="M40 20h20v10l10 14v62a10 10 0 0 1-10 10H40a10 10 0 0 1-10-10V44l10-14z" fill="#5fb3e0"/>
+              <rect x="34" y="56" width="32" height="30" rx="4" fill="#ffffff" opacity="0.6"/>
+              <path d="M40 66h20M40 76h20" stroke="#3d95c9" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h4>Use a Reusable Bottle</h4>
+          <ul>
+            <li>Reduce plastic waste by using a reusable bottle instead of single-use plastic bottles.</li>
+          </ul>
+        </div>
+
+        <div class="climate-card">
+          <div class="climate-card-img">
+            <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+              <rect x="45" y="70" width="10" height="40" rx="4" fill="#8d6e4a"/>
+              <circle cx="50" cy="46" r="24" fill="#2ecc71"/>
+              <circle cx="30" cy="62" r="16" fill="#27ae60"/>
+              <circle cx="70" cy="62" r="16" fill="#27ae60"/>
+              <path d="M22 110h56" stroke="#c9b18c" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h4>Plant Trees</h4>
+          <ul>
+            <li>Trees help absorb carbon dioxide and provide cleaner air for our communities.</li>
+          </ul>
+        </div>
+
+        <div class="climate-card">
+          <div class="climate-card-img">
+            <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+              <path d="M50 16c15 19 23 32 23 43a23 23 0 0 1-46 0c0-11 8-24 23-43z" fill="#3498db"/>
+              <path d="M50 42c7 10 11 17 11 23a11 11 0 0 1-22 0c0-6 4-13 11-23z" fill="#a9d8f5" opacity="0.65"/>
+              <path d="M24 108h52" stroke="#cfe8f7" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h4>Save Water</h4>
+          <ul>
+            <li>Turn off the tap when it is not needed and avoid wasting clean water.</li>
+          </ul>
+        </div>
+
+        <div class="climate-card">
+          <div class="climate-card-img">
+            <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+              <rect x="16" y="30" width="68" height="12" rx="5" fill="#1e8449"/>
+              <rect x="40" y="20" width="20" height="9" rx="3" fill="#1e8449"/>
+              <path d="M25 42h50l-5 60a8 8 0 0 1-8 7H38a8 8 0 0 1-8-7z" fill="#2ecc71"/>
+              <path d="M50 58l11 19H39z" fill="#ffffff" opacity="0.9"/>
+            </svg>
+          </div>
+          <h4>Recycle Properly</h4>
+          <ul>
+            <li>Separate recyclable materials from biodegradable and residual waste before disposal.</li>
+          </ul>
+        </div>
+
+        <div class="climate-card">
+          <div class="climate-card-img">
+            <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+              <path d="M50 30c-10 0-18 8-18 18" fill="none" stroke="#1e8449" stroke-width="6" stroke-linecap="round"/>
+              <path d="M50 30c10 0 18 8 18 18" fill="none" stroke="#1e8449" stroke-width="6" stroke-linecap="round"/>
+              <path d="M22 46h56l-6 58a8 8 0 0 1-8 7H36a8 8 0 0 1-8-7z" fill="#2ecc71"/>
+              <path d="M22 46h56l-2 18H24z" fill="#27ae60"/>
+            </svg>
+          </div>
+          <h4>Use Reusable Bags</h4>
+          <ul>
+            <li>Reduce plastic waste by using reusable bags instead of single-use plastic bags.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="eco-challenge-banner">
+        <div class="eco-challenge-icon">
+          <i class="fa-solid fa-leaf"></i>
+        </div>
+        <div class="eco-challenge-text">
+          <h4>Today's Eco Challenge</h4>
+          <p>Avoid using single-use plastics today!<br>Cleaner surroundings and healthier ecosystems.</p>
+        </div>
+      </div>
+
+      <div class="climate-footer">
+        <a href="#home" class="back-home-btn" id="climateBackHome">
+          <i class="fa-solid fa-arrow-left"></i> Back to Home
+        </a>
+        <div class="climate-footer-text">
+          Small Actions, greener tomorrow
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="simple-overlay" id="schedulePreviewModal" role="dialog" aria-modal="true">
+    <div class="simple-modal" style="max-width: 1000px;">
+      <button class="simple-close" data-close="schedulePreviewModal" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <p class="simple-sub" style="margin-top: 0.4rem;">
+        Here's a preview of how your collection calendar looks. Pick your city and barangay in the
+        Schedule tab to see your exact pickup dates.
+      </p>
+
+      <div class="schedule-preview-live">
+        <div class="sp-dashboard">
+
+          <div class="sp-panel">
+            <h5>Collection Week</h5>
+
+            <div class="sp-legend-item">
+              <span class="sp-dot" style="background:#208e3a;"></span>
+              Sunday and Monday — Biodegradable
+            </div>
+            <div class="sp-legend-item">
+              <span class="sp-dot" style="background:#e8b32a;"></span>
+              Tuesday and Thursday — Recyclable
+            </div>
+            <div class="sp-legend-item">
+              <span class="sp-dot" style="background:#1b659c;"></span>
+              Wednesday and Saturday — Residual
+            </div>
+            <div class="sp-legend-item">
+              <span class="sp-dot" style="background:#d64a3b;"></span>
+              Friday — Hazardous
+            </div>
+
+            <div class="sp-divider"></div>
+
+            <div class="sp-loc-label">City</div>
+            <div class="sp-loc-value">Lapu-Lapu City</div>
+
+            <div class="sp-loc-label">Barangay</div>
+            <div class="sp-loc-value">Subabasbas</div>
+          </div>
+
+          <div class="sp-panel">
+            <div class="sp-cal-header">
+              <i class="fa-solid fa-chevron-left"></i>
+              <span>September 2026</span>
+              <i class="fa-solid fa-chevron-right"></i>
+            </div>
+            <div class="sp-cal-sub">Subabasbas, Lapu-Lapu City</div>
+
+            <div class="sp-cal-grid">
+              <div class="sp-day-head">SUN</div>
+              <div class="sp-day-head">MON</div>
+              <div class="sp-day-head">TUE</div>
+              <div class="sp-day-head">WED</div>
+              <div class="sp-day-head">THU</div>
+              <div class="sp-day-head">FRI</div>
+              <div class="sp-day-head">SAT</div>
+
+              <div class="sp-date" style="visibility:hidden;"></div>
+              <div class="sp-date" style="visibility:hidden;"></div>
+              <div class="sp-date sp-has-dot">1</div>
+              <div class="sp-date sp-has-dot">2</div>
+              <div class="sp-date sp-has-dot">3</div>
+              <div class="sp-date sp-has-dot">4</div>
+              <div class="sp-date sp-has-dot">5</div>
+
+              <div class="sp-date sp-has-dot">6</div>
+              <div class="sp-date sp-has-dot">7</div>
+              <div class="sp-date sp-has-dot">8</div>
+              <div class="sp-date sp-has-dot">9</div>
+              <div class="sp-date sp-has-dot">10</div>
+              <div class="sp-date sp-has-dot">11</div>
+              <div class="sp-date sp-has-dot">12</div>
+
+              <div class="sp-date sp-has-dot">13</div>
+              <div class="sp-date sp-has-dot">14</div>
+              <div class="sp-date sp-has-dot">15</div>
+              <div class="sp-date sp-today">16</div>
+              <div class="sp-date sp-has-dot">17</div>
+              <div class="sp-date sp-outline">18</div>
+              <div class="sp-date sp-has-dot">19</div>
+
+              <div class="sp-date sp-has-dot">20</div>
+              <div class="sp-date sp-has-dot">21</div>
+              <div class="sp-date sp-has-dot">22</div>
+              <div class="sp-date sp-has-dot">23</div>
+              <div class="sp-date sp-has-dot">24</div>
+              <div class="sp-date sp-has-dot">25</div>
+              <div class="sp-date sp-has-dot">26</div>
+
+              <div class="sp-date sp-has-dot">27</div>
+              <div class="sp-date sp-has-dot">28</div>
+              <div class="sp-date sp-has-dot">29</div>
+              <div class="sp-date sp-has-dot">30</div>
+            </div>
+          </div>
+
+          <div class="sp-panel sp-upcoming-panel">
+            <h5>Upcoming Collections</h5>
+
+            <div class="sp-upcoming-item">
+              <div class="sp-up-icon" style="background:#1b659c;">
+                <i class="fa-solid fa-trash-can"></i>
+              </div>
+              <div class="sp-up-info">
+                <h6>Sep 19, 2026 • Sat</h6>
+                <p>Residual<br>7:00 AM – 10:00 AM</p>
+              </div>
+            </div>
+
+            <div class="sp-upcoming-item">
+              <div class="sp-up-icon" style="background:#208e3a;">
+                <i class="fa-solid fa-leaf"></i>
+              </div>
+              <div class="sp-up-info">
+                <h6>Sep 20, 2026 • Sun</h6>
+                <p>Biodegradable<br>7:00 AM – 10:00 AM</p>
+              </div>
+            </div>
+
+            <div class="sp-upcoming-item">
+              <div class="sp-up-icon" style="background:#208e3a;">
+                <i class="fa-solid fa-leaf"></i>
+              </div>
+              <div class="sp-up-info">
+                <h6>Sep 21, 2026 • Mon</h6>
+                <p>Biodegradable<br>7:00 AM – 10:00 AM</p>
+              </div>
+            </div>
+            <div class="sp-reminder" id="spReminderToggle">
+              <div class="sp-reminder-text">
+                <h6>Reminder</h6>
+                <p>Get notified before collection</p>
+              </div>
+              <i class="fa-regular fa-bell-slash" id="spReminderIcon"></i>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <button class="primary-btn" id="schedulePreviewGoBtn">
+        <i class="fa-solid fa-arrow-right"></i> Go to Schedule
+      </button>
+    </div>
+  </div>
+
+  <div class="simple-overlay" id="viewAllImagesModal" role="dialog" aria-modal="true">
+    <div class="simple-modal" style="max-width: 720px;">
+      <button class="simple-close" data-close="viewAllImagesModal" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h2><i class="fa-solid fa-calendar-check" style="color:#2d7a4a;"></i> Upcoming Collections</h2>
+      <p class="simple-sub">Here are your upcoming garbage collection schedules.</p>
+
+      <div class="full-schedule-item">
+        <div class="center-icon" style="background:#dff0e6;color:#208e3a;"><i class="fa-solid fa-leaf"></i></div>
+        <div class="center-info">
+          <h5>Biodegradable Waste</h5>
+          <p>May 22, 2026 • Thursday<br>7:00 AM – 10:00 AM</p>
+        </div>
+        <button class="reminder-btn">Set Reminder</button>
+      </div>
+
+      <div class="full-schedule-item">
+        <div class="center-icon" style="background:#d6eaf3;color:#1b659c;"><i class="fa-solid fa-trash-can"></i></div>
+        <div class="center-info">
+          <h5>Residual Waste</h5>
+          <p>May 24, 2026 • Saturday<br>7:00 AM – 10:00 AM</p>
+        </div>
+        <button class="reminder-btn">Set Reminder</button>
+      </div>
+
+      <div class="full-schedule-item">
+        <div class="center-icon" style="background:#f5edd6;color:#c2931a;"><i class="fa-solid fa-recycle"></i></div>
+        <div class="center-info">
+          <h5>Recyclable Waste</h5>
+          <p>May 26, 2026 • Monday<br>7:00 AM – 10:00 AM</p>
+        </div>
+        <button class="reminder-btn">Set Reminder</button>
+      </div>
+
+      <div class="full-schedule-item">
+        <div class="center-icon" style="background:#e8dff0;color:#d64a3b;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="center-info">
+          <h5>Hazardous Waste</h5>
+          <p>May 29, 2026 • Thursday<br>7:00 AM – 10:00 AM</p>
+        </div>
+        <button class="reminder-btn">Set Reminder</button>
+      </div>
+
+      <div class="notice-box">
+        <p>Schedule may change without prior notice. Please stay updated.</p>
+      </div>
+
+      <button class="back-home-btn" data-close="viewAllImagesModal" style="margin-top: 1rem;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Collection Schedule
+      </button>
+    </div>
+  </div>
+
+  <div class="simple-overlay" id="reportModal" role="dialog" aria-modal="true">
+    <div class="simple-modal" style="max-width: 900px; padding: 2rem;">
+      <button class="simple-close" data-close="reportModal" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+        
+        <div style="flex: 1.5; min-width: 320px;">
+          <h2 style="font-size: 1.6rem; font-weight: 700; color: #1a402b; margin-bottom: 1.5rem; padding-right: 2.5rem; display: flex; align-items: center; gap: 0.6rem;">
+            <i class="fa-solid fa-triangle-exclamation" style="color:#b48b2a;"></i> Report Details
+          </h2>
+
+          <form class="simple-form" id="reportForm">
+            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #2d4a3a; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 0.5rem;">Upload Photo</label>
+            <div style="border: 2px dashed #c8dcd0; border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 1rem; background: #fcfdfe; cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='#2d7a4a'; this.style.background='#f4f8f5';" onmouseout="this.style.borderColor='#c8dcd0'; this.style.background='#fcfdfe';">
+              <i class="fa-solid fa-camera" style="font-size: 2rem; color: #2d7a4a; margin-bottom: 0.5rem; display: block;"></i>
+              <span style="font-size: 0.9rem; font-weight: 600; color: #1a402b;">Add Photo</span>
+              <input type="file" id="reportPhoto" accept="image/*" style="display: none;">
+            </div>
+
+            <label for="reportType" style="display: block; font-size: 0.78rem; font-weight: 700; color: #2d4a3a; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 0.35rem;">Type of Waste</label>
+            <select id="reportType" required style="width: 100%; padding: 0.7rem 0.9rem; border-radius: 12px; border: 1px solid #c8dcd0; background: #fcfdfe; font-size: 0.9rem; color: #1a402b; font-family: inherit; outline: none; margin-bottom: 1rem; transition: 0.2s; resize: vertical;">
+              <option value="" disabled selected>Select type of Waste</option>
+              <option>Mixed household waste</option>
+              <option>Construction debris</option>
+              <option>Hazardous / chemical</option>
+              <option>Electronic waste (e-waste)</option>
+              <option>Other</option>
+            </select>
+
+            <label for="reportDesc" style="display: block; font-size: 0.78rem; font-weight: 700; color: #2d4a3a; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 0.35rem;">Description</label>
+            <textarea id="reportDesc" rows="3" placeholder="Provide details ..." style="width: 100%; padding: 0.7rem 0.9rem; border-radius: 12px; border: 1px solid #c8dcd0; background: #fcfdfe; font-size: 0.9rem; color: #1a402b; font-family: inherit; outline: none; margin-bottom: 1rem; transition: 0.2s; resize: vertical;"></textarea>
+
+            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #2d4a3a; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 0.35rem;">Date and Time</label>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+              <input type="date" id="reportDate" style="flex: 1; padding: 0.7rem 0.9rem; border-radius: 12px; border: 1px solid #c8dcd0; background: #fcfdfe; font-size: 0.9rem; color: #1a402b; font-family: inherit; outline: none; transition: 0.2s;">
+              <input type="time" id="reportTime" style="flex: 1; padding: 0.7rem 0.9rem; border-radius: 12px; border: 1px solid #c8dcd0; background: #fcfdfe; font-size: 0.9rem; color: #1a402b; font-family: inherit; outline: none; transition: 0.2s;">
+            </div>
+
+            <button type="submit" class="primary-btn" style="background: #1b653a; color: #fff; border: none; padding: 0.85rem; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; width: 100%;">
+              <i class="fa-solid fa-paper-plane"></i> Submit Report
+            </button>
+          </form>
+        </div>
+
+        <div style="flex: 1; min-width: 280px; background: #f8faf8; border-radius: 1.5rem; padding: 1.5rem; border: 1px solid #e4eee8;">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: #1a402b; margin-bottom: 1.2rem;">Report Status</h3>
+
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: flex; align-items: flex-start; gap: 0.8rem;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: #f5edd6; color: #b48b2a; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
+                <i class="fa-regular fa-clock"></i>
+              </div>
+              <div>
+                <h5 style="font-size: 0.9rem; font-weight: 700; color: #1a402b; margin-bottom: 0.1rem;">Pending</h5>
+                <p style="font-size: 0.75rem; color: #6b8a78; line-height: 1.3;">Your report has been submitted</p>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: flex-start; gap: 0.8rem;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: #d6eaf3; color: #1f6d8f; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
+                <i class="fa-solid fa-spinner"></i>
+              </div>
+              <div>
+                <h5 style="font-size: 0.9rem; font-weight: 700; color: #1a402b; margin-bottom: 0.1rem;">Under Review</h5>
+                <p style="font-size: 0.75rem; color: #6b8a78; line-height: 1.3;">Our team is checking the report</p>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: flex-start; gap: 0.8rem;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: #dff0e6; color: #208e3a; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0;">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <div>
+                <h5 style="font-size: 0.9rem; font-weight: 700; color: #1a402b; margin-bottom: 0.1rem;">Resolved</h5>
+                <p style="font-size: 0.75rem; color: #6b8a78; line-height: 1.3;">The issue has been resolved</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e4eee8; display: flex; align-items: center; gap: 1rem;">
+            <div style="flex: 1;">
+              <h4 style="font-size: 0.95rem; font-weight: 700; color: #1a402b; margin-bottom: 0.3rem;">DID YOU KNOW ?</h4>
+              <p style="font-size: 0.75rem; color: #4a6f5a; line-height: 1.4;">Reporting illegal dumping helps protect our environment and community.</p>
+            </div>
+            <div style="width: 80px; height: 80px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+              <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+                <circle cx="50" cy="50" r="45" fill="#f0f7f2"/>
+                <rect x="30" y="35" width="40" height="45" rx="5" fill="#2ecc71"/>
+                <rect x="35" y="45" width="30" height="4" rx="2" fill="#ffffff" opacity="0.8"/>
+                <rect x="35" y="55" width="30" height="4" rx="2" fill="#ffffff" opacity="0.8"/>
+                <rect x="35" y="65" width="30" height="4" rx="2" fill="#ffffff" opacity="0.8"/>
+                <path d="M50 25 L50 35 M50 25 L45 30 M50 25 L55 30" stroke="#1b653a" stroke-width="3" stroke-linecap="round" fill="none"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="simple-overlay" id="centersModal" role="dialog" aria-modal="true">
+    <div class="simple-modal">
+      <button class="simple-close" data-close="centersModal" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h2><i class="fa-solid fa-location-dot" style="color:#1a7ab8;"></i> Recycling Centers Near You</h2>
+      <p class="simple-sub">Drop-off points closest to <strong id="centersLocation">Subabasbas, Lapu-Lapu City</strong>.</p>
+      <div id="centersList"></div>
+    </div>
+  </div>
+  <div class="simple-overlay" id="announceModal" role="dialog" aria-modal="true">
+    <div class="simple-modal">
+      <button class="simple-close" data-close="announceModal" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h2><i class="fa-solid fa-bullhorn" style="color:#b48b2a;"></i> System Announcement</h2>
+      <p class="simple-sub">Schedule update for holiday pickup times in Sector B.</p>
+
+      <div class="guide-section">
+        <h4>What's changing</h4>
+        <ul class="guide-list">
+          <li><i class="fa-solid fa-circle-check"></i> <span>Collection for <strong>Sector B</strong> moves from 7:00 AM to <strong>5:30 AM</strong> on holidays.</span></li>
+          <li><i class="fa-solid fa-circle-check"></i> <span>Biodegradable pickup on <strong>Sunday and Monday</strong> stays the same.</span></li>
+          <li><i class="fa-solid fa-circle-check"></i> <span>Trucks will only wait <strong>10 minutes</strong> per street during holiday routes.</span></li>
+        </ul>
+      </div>
+
+      <div class="guide-section" style="margin-bottom:0;">
+        <h4>What you should do</h4>
+        <ul class="guide-list">
+          <li><i class="fa-solid fa-circle-check"></i> <span>Put your bins out the night before.</span></li>
+          <li><i class="fa-solid fa-circle-check"></i> <span>Turn on collection reminders in the Schedule tab.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="simple-overlay" id="editProfileModal" role="dialog" aria-modal="true">
+    <div class="simple-modal">
+      <button class="simple-close" data-close="editProfileModal" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h2><i class="fa-regular fa-user" style="color:#2d7a4a;"></i> Edit Profile</h2>
+      <p class="simple-sub">Update your display name, contact email, and profile picture.</p>
+
+      <form class="simple-form" id="editProfileForm">
+        <label for="editName">Display name</label>
+        <input type="text" id="editName" required>
+
+        <label for="editEmail">Email address</label>
+        <input type="email" id="editEmail" required>
+
+        <label for="editBarangay">Barangay</label>
+        <select id="editBarangay">
+          <option>Subabasbas</option>
+          <option>Basak</option>
+          <option>Marigondon</option>
+          <option>Pajo</option>
+        </select>
+
+        <label for="editAvatar">Profile Picture</label>
+        <input type="file" id="editAvatar" accept="image/*" style="padding: 0.5rem; background: #f4f8f5; cursor: pointer;">
+
+        <button type="submit" class="primary-btn">
+          <i class="fa-solid fa-floppy-disk"></i> Save Changes
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="simple-overlay" id="infoModal" role="dialog" aria-modal="true">
+    <div class="simple-modal">
+      <button class="simple-close" data-close="infoModal" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h2 id="infoTitle">Information</h2>
+      <div id="infoBody"></div>
+    </div>
+  </div>
+  <div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i> Ready</div>
+
+<script>
+    (function () {
+    'use strict';
+
+    const toastEl = document.getElementById('toast');
+    let toastTimer = null;
+
+    function showToast(msg, icon) {
+      toastEl.innerHTML = '<i class="fa-solid ' + (icon || 'fa-circle-check') + '"></i> ' + msg;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+    }
+
+    function openOverlay(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeOverlay(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('open');
+      if (!document.querySelector('.simple-overlay.open, .guide-modal-overlay.open, .climate-modal-overlay.open')) {
+        document.body.style.overflow = '';
+      }
+    }
+
+    document.querySelectorAll('[data-close]').forEach(function (btn) {
+      btn.addEventListener('click', function () { closeOverlay(btn.dataset.close); });
+    });
+
+    document.querySelectorAll('.simple-overlay').forEach(function (ov) {
+      ov.addEventListener('click', function (e) {
+        if (e.target === ov) closeOverlay(ov.id);
+      });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      document.querySelectorAll('.simple-overlay.open').forEach(function (o) { closeOverlay(o.id); });
+      if (guideModal.classList.contains('open')) closeGuide();
+      if (climateModal.classList.contains('open')) closeClimateModal();
+    });
+
+
+    document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        const id = this.getAttribute('href');
+        if (!id || id === '#') { 
+          e.preventDefault(); 
+          return; 
+        }
+        const target = document.querySelector(id);
+        if (!target) { 
+          e.preventDefault();
+          return; 
+        }
+
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        if (this.classList.contains('nav-item')) {
+          document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
+          this.classList.add('active');
+        }
+      });
+    });
+
+    const wiseSearchNav = document.querySelector('a[href="#search-result"].nav-item');
+    if (wiseSearchNav) {
+      wiseSearchNav.addEventListener('click', function () {
+        setTimeout(function () {
+          const input = document.getElementById('wiseSearchInput');
+          if (input) input.focus({ preventScroll: true });
+        }, 500);
+      });
+    }
+
+    const CATEGORY_STYLE = {
+      biodegradable: { color: '#208e3a', dark: '#146527', label: 'Biodegradable' },
+      recyclable:    { color: '#e8b32a', dark: '#c2931a', label: 'Recyclable' },
+      residual:      { color: '#1b659c', dark: '#154d77', label: 'Residual' },
+      hazardous:     { color: '#d64a3b', dark: '#a83428', label: 'Hazardous' }
+    };
+
+    const BOTTLE_SVG =
+      '<svg class="bottle-img" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M 35 15 L 65 15 L 65 30 L 75 45 L 75 180 C 75 190, 65 195, 50 195 C 35 195, 25 190, 25 180 L 25 45 L 35 30 Z" fill="#cbe3f0" stroke="#7bb1d4" stroke-width="3"/>' +
+        '<rect x="33" y="5" width="34" height="12" rx="2" fill="#3190cc" />' +
+        '<path d="M 26 80 Q 50 90 74 80 M 26 110 Q 50 120 74 110 M 26 140 Q 50 150 74 140" stroke="#a0ccf0" stroke-width="2" fill="none"/>' +
+      '</svg>';
+
+    function binSVG(catKey) {
+      const s = CATEGORY_STYLE[catKey];
+      return '<svg class="bin-img" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M 15 35 L 125 35 L 115 125 C 113 132, 105 135, 95 135 L 45 135 C 35 135, 27 132, 25 125 Z" fill="' + s.color + '" />' +
+        '<path d="M 10 25 L 130 25 L 125 35 L 15 35 Z" fill="' + s.dark + '" />' +
+        '<path d="M 50 70 L 60 55 L 70 70 M 60 55 L 60 85 M 75 75 L 85 85 L 75 95 M 85 85 L 55 85" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>' +
+        '<text x="70" y="115" font-size="11" text-anchor="middle" fill="#ffffff" font-weight="bold">' + s.label + '</text>' +
+      '</svg>';
+    }
+
+    const wasteDB = {
+      plasticBottle: {
+        name: 'Plastic Bottle', category: 'Recyclable', catKey: 'recyclable',
+        visual: { type: 'svg' },
+        where: 'Rinse and dispose in the <strong>Yellow Bin</strong> for recyclables.',
+        steps: ['Remove the cap and label.', 'Rinse to remove any residue.', 'Flatten the bottle to save space.', 'Dispose in the yellow bin.'],
+        keywords: ['plastic', 'bottle', 'pet', 'pet bottle', 'water bottle', 'soda bottle', 'plastic bottle']
+      },
+      glassBottle: {
+        name: 'Glass Bottle', category: 'Recyclable', catKey: 'recyclable',
+        visual: { type: 'icon', icon: 'fa-wine-bottle' },
+        where: 'Rinse and place in the <strong>Yellow Bin</strong>. Handle with care.',
+        steps: ['Empty and rinse the bottle.', 'Remove metal caps or corks.', 'Do not break the glass.', 'Place in the yellow bin.'],
+        keywords: ['glass', 'glass bottle', 'jar', 'bottle']
+      },
+      cardboard: {
+        name: 'Cardboard', category: 'Recyclable', catKey: 'recyclable',
+        visual: { type: 'icon', icon: 'fa-box' },
+        where: 'Flatten and place in the <strong>Yellow Bin</strong>. Keep it dry.',
+        steps: ['Remove tape and plastic wrap.', 'Flatten the box.', 'Keep it clean and dry.', 'Place in the yellow bin.'],
+        keywords: ['cardboard', 'box', 'carton', 'paper', 'newspaper']
+      },
+      bananaPeel: {
+        name: 'Banana Peel', category: 'Biodegradable', catKey: 'biodegradable',
+        visual: { type: 'icon', icon: 'fa-apple-whole' },
+        where: 'Place in the <strong>Green Bin</strong> for biodegradable waste, or compost it.',
+        steps: ['Remove any plastic or sticker.', 'Do not mix with plastics.', 'Place in the green bin.', 'Compost if you have a pit.'],
+        keywords: ['banana', 'banana peel', 'peel', 'fruit', 'food scrap', 'vegetable']
+      },
+      leaves: {
+        name: 'Dry Leaves', category: 'Biodegradable', catKey: 'biodegradable',
+        visual: { type: 'icon', icon: 'fa-tree' },
+        where: 'Place in the <strong>Green Bin</strong> or add to a compost pile.',
+        steps: ['Sweep them into a pile.', 'Remove plastic wrappers or trash.', 'Place in the green bin.', 'Or compost for garden soil.'],
+        keywords: ['leaves', 'leaf', 'dry leaves', 'grass', 'twigs', 'yard waste']
+      },
+      diaper: {
+        name: 'Used Diaper', category: 'Residual', catKey: 'residual',
+        visual: { type: 'icon', icon: 'fa-baby' },
+        where: 'Wrap securely and place in the <strong>Blue Bin</strong> for residual waste.',
+        steps: ['Remove solid waste into the toilet.', 'Wrap the diaper tightly.', 'Seal it in a small bag.', 'Place in the blue bin.'],
+        keywords: ['diaper', 'nappy', 'used diaper', 'sanitary', 'pad']
+      },
+      tissue: {
+        name: 'Used Tissue', category: 'Residual', catKey: 'residual',
+        visual: { type: 'icon', icon: 'fa-toilet-paper' },
+        where: 'Place in the <strong>Blue Bin</strong> for residual waste.',
+        steps: ['Do not put it in the recycling bin.', 'Do not flush large amounts.', 'Place in the blue bin.'],
+        keywords: ['tissue', 'used tissue', 'napkin', 'paper towel', 'candy wrapper', 'wrapper']
+      },
+      battery: {
+        name: 'Used Battery', category: 'Hazardous', catKey: 'hazardous',
+        visual: { type: 'icon', icon: 'fa-battery-full' },
+        where: 'Take to a <strong>Hazardous Waste Drop-off</strong> — never in regular trash.',
+        steps: ['Tape the terminals to prevent sparks.', 'Never throw batteries in regular bins.', 'Store in a dry container.', 'Drop off at a hazardous waste point.'],
+        keywords: ['battery', 'batteries', 'used battery', 'aa', 'aaa', 'lithium']
+      },
+      bulb: {
+        name: 'Used Light Bulb', category: 'Hazardous', catKey: 'hazardous',
+        visual: { type: 'icon', icon: 'fa-lightbulb' },
+        where: 'Take to a <strong>Hazardous Waste Drop-off</strong>. Do not break the bulb.',
+        steps: ['Wrap the bulb in paper or cloth.', 'Do not throw it in regular trash.', 'Place in a rigid container.', 'Drop off at a hazardous waste point.'],
+        keywords: ['bulb', 'light bulb', 'lamp', 'fluorescent', 'cfl']
+      }
+    };
+
+    const CATEGORY_DEFAULT = {
+      biodegradable: 'bananaPeel',
+      recyclable: 'plasticBottle',
+      residual: 'diaper',
+      hazardous: 'battery'
+    };
+
+    const itemVisualEl   = document.getElementById('itemVisual');
+    const itemNameEl     = document.getElementById('itemName');
+    const itemCategoryEl = document.getElementById('itemCategory');
+    const itemWhereEl    = document.getElementById('itemWhere');
+    const stepsListEl    = document.getElementById('stepsList');
+    const binVisualEl    = document.getElementById('binVisual');
+    const dotsEl         = document.getElementById('categoryDots');
+
+    function renderItem(key) {
+      const item = wasteDB[key];
+      if (!item) return;
+
+      const style = CATEGORY_STYLE[item.catKey];
+
+      if (item.visual.type === 'svg') {
+        itemVisualEl.innerHTML = BOTTLE_SVG;
+      } else {
+        itemVisualEl.innerHTML = '<i class="fa-solid ' + item.visual.icon + '" style="color:' + style.color + '"></i>';
+      }
+
+      itemNameEl.textContent = item.name;
+      itemCategoryEl.textContent = item.category;
+      itemCategoryEl.style.color = style.color;
+      itemWhereEl.innerHTML = item.where;
+
+      stepsListEl.innerHTML = item.steps
+        .map(function (s) { return '<li><span class="check">✓</span> ' + s + '</li>'; })
+        .join('');
+
+      binVisualEl.innerHTML = binSVG(item.catKey);
+
+      dotsEl.querySelectorAll('.dot').forEach(function (d) {
+        d.classList.toggle('active', d.dataset.cat === item.catKey);
+      });
+    }
+
+    dotsEl.querySelectorAll('.dot').forEach(function (dot) {
+      dot.addEventListener('click', function () {
+        const cat = dot.dataset.cat;
+        renderItem(CATEGORY_DEFAULT[cat]);
+        showToast('Showing ' + CATEGORY_STYLE[cat].label + ' example', 'fa-circle-info');
+      });
+    });
+
+    function searchWaste(rawQuery) {
+      const q = (rawQuery || '').trim().toLowerCase();
+      if (!q) {
+        showToast('Type an item to search — e.g. "battery"', 'fa-circle-info');
+        return;
+      }
+
+      let foundKey = null;
+      Object.keys(wasteDB).some(function (key) {
+        const item = wasteDB[key];
+        const name = item.name.toLowerCase();
+
+        if (name === q || name.indexOf(q) !== -1 || q.indexOf(name) !== -1) {
+          foundKey = key; return true;
+        }
+        const hit = item.keywords.some(function (k) {
+          return k === q || (k.length > 2 && q.indexOf(k) !== -1) || (q.length > 2 && k.indexOf(q) !== -1);
+        });
+        if (hit) { foundKey = key; return true; }
+        return false;
+      });
+
+      if (foundKey) {
+        renderItem(foundKey);
+        showToast('Found: ' + wasteDB[foundKey].name, 'fa-magnifying-glass');
+      } else {
+        showToast('No match — try "bottle", "battery", "peel"…', 'fa-circle-question');
+      }
+    }
+
+    document.getElementById('wiseSearchBtn').addEventListener('click', function () {
+      searchWaste(document.getElementById('wiseSearchInput').value);
+    });
+
+    document.getElementById('wiseSearchInput').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        searchWaste(this.value);
+      }
+    });
+
+    renderItem('plasticBottle');
+
+    const recycleGuides = {
+      biodegradable: {
+        title: 'Biodegradable', icon: 'fa-leaf', color: '#208e3a', bg: '#dff0e6',
+        description: 'Waste that comes from plants or animals and can naturally decompose.',
+        examples: [
+          { name: 'Dry Leaves', icon: 'fa-tree' },
+          { name: 'Banana Peel', icon: 'fa-apple-whole' },
+          { name: 'Apple Core', icon: 'fa-apple-alt' }
+        ],
+        images: [
+          'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=500',
+          'https://images.unsplash.com/photo-1606787366850-de63301c7bfc?w=500',
+          'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500',
+          'https://images.unsplash.com/photo-1518843875459-f738682238a6?w=500',
+          'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=500',
+          'https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=500'
+        ],
+        segregation: [
+          'Place in a trash bin properly.',
+          'Remove the non-biodegradable materials (e.g. plastic).',
+          'Compost if possible to reduce landfill waste.'
+        ],
+        mistakes: [
+          'Mixing with plastics.',
+          'Putting biodegradable waste in the wrong bin.'
+        ]
+      }
+    };
+
+    const guideModal       = document.getElementById('guideModal');
+    const guideSidebar     = document.getElementById('guideSidebar');
+    const guideMainContent = document.getElementById('guideMainContent');
+    const guideClose       = document.getElementById('guideClose');
+
+    function renderSidebar(activeKey) {
+      guideSidebar.innerHTML = Object.keys(recycleGuides).map(function (key) {
+        const g = recycleGuides[key];
+        const isActive = key === activeKey ? 'active' : '';
+        return '<button class="guide-sidebar-btn ' + isActive + '" data-guide="' + key + '">' +
+                 '<i class="fa-solid ' + g.icon + '"></i> ' + g.title +
+               '</button>';
+      }).join('');
+
+      guideSidebar.querySelectorAll('.guide-sidebar-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () { openGuide(btn.dataset.guide); });
+      });
+    }
+
+    function renderMainContent(key) {
+      const g = recycleGuides[key];
+      if (!g) return;
+
+      const gridColorClass = {
+        biodegradable: 'green',
+        recyclable:    'yellow',
+        residual:      'blue',
+        hazardous:     'red'
+      }[key] || 'green';
+
+      guideMainContent.innerHTML =
+        '<div style="display: flex; gap: 2rem; align-items: flex-start;">' +
+          '<div style="flex-shrink: 0; width: 200px;">' +
+            '<h2 style="font-size: 1.8rem; font-weight: 800; color: #1a402b; margin-bottom: 0.5rem; text-transform: uppercase;">' + g.title + '</h2>' +
+            '<p class="guide-subtitle" style="font-size: 0.95rem; color: #4a6f5a; line-height: 1.5;">' + g.description + '</p>' +
+          '</div>' +
+          '<div style="flex: 1;">' +
+            (g.images && g.images.length ?
+              '<div class="category-image-grid ' + gridColorClass + '" style="grid-template-columns: 1fr; gap: 0;">' +
+                '<div class="grid-card" style="aspect-ratio: 16/9; border-radius: 1rem; border-width: 4px;">' +
+                  '<img src="' + g.images[0] + '" alt="' + g.title + ' example" loading="lazy">' +
+                '</div>' +
+              '</div>'
+              : '') +
+          '</div>' +
+        '</div>';
+    }
+
+    function openGuide(key) {
+      if (!recycleGuides[key]) key = 'biodegradable';
+      renderSidebar(key);
+      renderMainContent(key);
+      guideModal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeGuide() {
+      guideModal.classList.remove('open');
+      if (!document.querySelector('.simple-overlay.open, .climate-modal-overlay.open')) {
+        document.body.style.overflow = '';
+      }
+    }
+
+    document.querySelectorAll('[data-guide]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        openGuide(btn.dataset.guide);
+      });
+    });
+
+    guideClose.addEventListener('click', closeGuide);
+    guideModal.addEventListener('click', function (e) {
+      if (e.target === guideModal) closeGuide();
+    });
+
+    const climateModal   = document.getElementById('climateModal');
+    const climateClose   = document.getElementById('climateClose');
+    const openClimateBtn = document.getElementById('openClimateBtn');
+    const climateBackHome = document.getElementById('climateBackHome');
+
+    function openClimateModal(e) {
+      if (e) e.preventDefault();
+      climateModal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeClimateModal() {
+      climateModal.classList.remove('open');
+      if (!document.querySelector('.simple-overlay.open, .guide-modal-overlay.open')) {
+        document.body.style.overflow = '';
+      }
+    }
+
+    openClimateBtn.addEventListener('click', openClimateModal);
+    climateClose.addEventListener('click', closeClimateModal);
+
+    climateBackHome.addEventListener('click', function (e) {
+      e.preventDefault();
+      closeClimateModal();
+      document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    climateModal.addEventListener('click', function (e) {
+      if (e.target === climateModal) closeClimateModal();
+    });
+
+    document.getElementById('openSchedulePreviewBtn').addEventListener('click', function () {
+      openOverlay('schedulePreviewModal');
+    });
+
+    document.getElementById('schedulePreviewGoBtn').addEventListener('click', function () {
+      closeOverlay('schedulePreviewModal');
+      setTimeout(function () {
+        document.getElementById('schedule').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
+        const navSchedule = document.querySelector('a[href="#schedule"].nav-item');
+        if (navSchedule) navSchedule.classList.add('active');
+      }, 200);
+    });
+
+    (function () {
+      const toggle = document.getElementById('spReminderToggle');
+      const icon   = document.getElementById('spReminderIcon');
+      if (!toggle || !icon) return;
+
+      let on = false;
+      toggle.addEventListener('click', function () {
+        on = !on;
+        if (on) {
+          icon.className = 'fa-solid fa-bell on';
+          showToast('Reminders turned ON', 'fa-bell');
+        } else {
+          icon.className = 'fa-regular fa-bell-slash';
+          icon.style.color = '';
+          showToast('Reminders turned OFF', 'fa-bell-slash');
+        }
+      });
+    })();
+
+    const viewAllUpcomingBtn = document.getElementById('viewAllUpcomingBtn');
+    if (viewAllUpcomingBtn) {
+      viewAllUpcomingBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        openOverlay('viewAllImagesModal');
+      });
+    }
+
+    document.querySelectorAll('.reminder-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (this.classList.contains('done')) {
+          showToast('Reminder already set', 'fa-circle-info');
+          return;
+        }
+        this.classList.add('done');
+        this.textContent = 'Reminder Set';
+        showToast('Reminder set for this collection', 'fa-bell');
+      });
+    });
+
+    document.getElementById('openReportBtn').addEventListener('click', function () {
+      openOverlay('reportModal');
+    });
+
+    document.getElementById('reportForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const location = document.getElementById('reportLocation') ? document.getElementById('reportLocation').value.trim() : '';
+
+      const countEl = document.getElementById('reportCount');
+      countEl.textContent = (parseInt(countEl.textContent.replace(/,/g, ''), 10) + 1).toLocaleString();
+
+      const list = document.getElementById('activityList');
+      const row = document.createElement('div');
+      row.className = 'activity-item';
+      row.innerHTML =
+        '<div class="activity-item-left">' +
+          '<i class="fa-solid fa-check-circle"></i>' +
+          '<span>Reported illegal dumping' + (location ? ' at ' + location : '') + '</span>' +
+        '</div>' +
+        '<div class="activity-date"><i class="fa-regular fa-calendar"></i> Just now</div>';
+      list.prepend(row);
+
+      this.reset();
+      closeOverlay('reportModal');
+      showToast('Report submitted. Thank you!', 'fa-paper-plane');
+    });
+
+    const recyclingCenters = [
+      { name: 'Subabasbas Materials Recovery Facility', addr: 'Barangay Subabasbas, Lapu-Lapu City', dist: '0.8 km', tags: ['Plastic', 'Glass', 'Paper'] },
+      { name: 'Basak Eco Drop-off Point', addr: 'Basak Road, Lapu-Lapu City', dist: '2.4 km', tags: ['Paper', 'Metal', 'Cardboard'] },
+      { name: 'Marigondon Junk Shop & Recycler', addr: 'Marigondon Crossing, Lapu-Lapu City', dist: '3.6 km', tags: ['Metal', 'E-waste'] },
+      { name: 'Lapu-Lapu City Hazardous Waste Depot', addr: 'City Hall Compound, Lapu-Lapu City', dist: '5.1 km', tags: ['Battery', 'Chemical', 'Bulb'] }
+    ];
+
+    const centersList = document.getElementById('centersList');
+    const centersLocation = document.getElementById('centersLocation');
+
+    function renderCenters() {
+      centersList.innerHTML = recyclingCenters.map(function (c) {
+        const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(c.name + ' ' + c.addr);
+        return '<div class="center-item">' +
+                 '<div class="center-icon"><i class="fa-solid fa-recycle"></i></div>' +
+                 '<div class="center-info">' +
+                   '<h5>' + c.name + '</h5>' +
+                   '<p>' + c.addr + ' · ' + c.dist + ' away</p>' +
+                   '<div class="tags">' + c.tags.map(function (t) { return '<span>' + t + '</span>'; }).join('') + '</div>' +
+                 '</div>' +
+                 '<a class="center-dir-btn" href="' + mapsUrl + '" target="_blank" rel="noopener">' +
+                   '<i class="fa-solid fa-diamond-turn-right"></i> Directions' +
+                 '</a>' +
+               '</div>';
+      }).join('');
+    }
+
+    renderCenters();
+
+    document.getElementById('findCenterBtn').addEventListener('click', function () {
+      centersLocation.textContent =
+        document.getElementById('brgySelect').value + ', ' + document.getElementById('citySelect').value;
+      openOverlay('centersModal');
+    });
+
+    const readAnnouncementBtn = document.getElementById('readAnnouncementBtn');
+    if (readAnnouncementBtn) {
+      readAnnouncementBtn.addEventListener('click', function () {
+        openOverlay('announceModal');
+      });
+    }
+
+    const joinBtn = document.getElementById('joinEventBtn');
+    let joined = false;
+    if (joinBtn) {
+      joinBtn.addEventListener('click', function () {
+        joined = !joined;
+
+        if (joined) {
+          joinBtn.classList.add('done');
+          joinBtn.innerHTML = 'Joined <i class="fa-solid fa-check"></i>';
+          showToast('You joined the Coastal Clean-up Drive!', 'fa-hands-holding-circle');
+
+          const list = document.getElementById('activityList');
+          const row = document.createElement('div');
+          row.className = 'activity-item';
+          row.innerHTML =
+            '<div class="activity-item-left">' +
+              '<i class="fa-solid fa-check-circle"></i>' +
+              '<span>Joined Clean-Up Drive</span>' +
+            '</div>' +
+            '<div class="activity-date"><i class="fa-regular fa-calendar"></i> Just now</div>';
+          list.prepend(row);
+        } else {
+          joinBtn.classList.remove('done');
+          joinBtn.innerHTML = 'Join Event <i class="fa-solid fa-check"></i>';
+          showToast('You left the event.', 'fa-circle-info');
+        }
+      });
+    }
+
+    document.querySelectorAll('.join-activity-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const activityName = this.dataset.activity;
+        if (this.classList.contains('done')) {
+          showToast('You are already registered for ' + activityName, 'fa-circle-info');
+          return;
+        }
+        
+        this.classList.add('done');
+        this.textContent = 'Joined';
+        showToast('You joined the ' + activityName + '!', 'fa-hands-holding-circle');
+        
+        const list = document.getElementById('activityList');
+        const row = document.createElement('div');
+        row.className = 'activity-item';
+        row.innerHTML =
+          '<div class="activity-item-left">' +
+            '<i class="fa-solid fa-check-circle"></i>' +
+            '<span>Joined ' + activityName + '</span>' +
+          '</div>' +
+          '<div class="activity-date"><i class="fa-regular fa-calendar"></i> Just now</div>';
+        list.prepend(row);
+      });
+    });
+
+    const profileNameEl  = document.getElementById('profileName');
+    const profileEmailEl = document.getElementById('profileEmail');
+    const profileAvatarEl = document.getElementById('profileAvatar');
+    const navAvatarEl = document.getElementById('navAvatar');
+
+    const defaultAvatarSVG = `
+      <svg viewBox="0 0 100 100" width="72" height="72" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Profile avatar">
+        <circle cx="50" cy="50" r="50" fill="#dff0e6"/>
+        <circle cx="50" cy="38" r="16" fill="#2d7a4a"/>
+        <path d="M50 62c-15 0-27 11-29 25 8 6 18 9 29 9s21-3 29-9c-2-14-14-25-29-25z" fill="#2d7a4a"/>
+      </svg>`;
+
+    document.getElementById('editProfileBtn').addEventListener('click', function () {
+      document.getElementById('editName').value = profileNameEl.textContent;
+      document.getElementById('editEmail').value = profileEmailEl.textContent;
+      document.getElementById('editAvatar').value = '';
+      openOverlay('editProfileModal');
+    });
+
+    document.getElementById('editProfileForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      
+      profileNameEl.textContent = document.getElementById('editName').value.trim();
+      profileEmailEl.textContent = document.getElementById('editEmail').value.trim();
+      
+      const fileInput = document.getElementById('editAvatar');
+      if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const imgHTML = '<img src="' + e.target.result + '" alt="Profile Avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">';
+          profileAvatarEl.innerHTML = imgHTML;
+          navAvatarEl.src = e.target.result;
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      } else {
+        profileAvatarEl.innerHTML = defaultAvatarSVG;
+        navAvatarEl.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='50' fill='%232d7a4a'/%3E%3Cpath d='M50 20C30 35 28 60 50 84 72 60 70 35 50 20Z' fill='%23eaf7ee'/%3E%3Cpath d='M50 26V80M50 46L36 56M50 46L64 56M50 62L38 70M50 62L62 70' stroke='%232d7a4a' stroke-width='3' stroke-linecap='round' fill='none'/%3E%3C/svg%3E";
+      }
+
+      closeOverlay('editProfileModal');
+      showToast('Profile updated successfully', 'fa-floppy-disk');
+    });
+
+    const INFO = {
+      privacy: {
+        title: 'Privacy Policy',
+        body: '<p class="simple-sub">WasteWise collects only the information needed to run collection schedules and community reports.</p>' +
+              '<ul class="guide-list">' +
+                '<li><i class="fa-solid fa-circle-check"></i> <span>We never sell your personal data.</span></li>' +
+                '<li><i class="fa-solid fa-circle-check"></i> <span>Location data is used only to match you with nearby collection routes and recycling centers.</span></li>' +
+                '<li><i class="fa-solid fa-circle-check"></i> <span>Reports you submit are shared only with your barangay waste office.</span></li>' +
+              '</ul>'
+      },
+      terms: {
+        title: 'Terms of Service',
+        body: '<p class="simple-sub">By using WasteWise you agree to keep the community accurate and respectful.</p>' +
+              '<ul class="guide-list">' +
+                '<li><i class="fa-solid fa-circle-check"></i> <span>Submit only truthful waste reports.</span></li>' +
+                '<li><i class="fa-solid fa-circle-check"></i> <span>Do not misuse the reporting feature to target individuals.</span></li>' +
+                '<li><i class="fa-solid fa-circle-check"></i> <span>Eco Points have no cash value and may be reset each season.</span></li>' +
+              '</ul>'
+      },
+      help: {
+        title: 'Help Center',
+        body: '<p class="simple-sub">Quick answers to the most common questions.</p>' +
+              '<ul class="guide-list">' +
+                '<li><i class="fa-solid fa-circle-check"></i> <span><strong>How do I know which bin to use?</strong> Use Wise Search — type the item and we will tell you.</span></li>' +
+                '<li><i class="fa-solid fa-circle-check"></i> <span><strong>When is pickup in my area?</strong> Open the Schedule tab, pick your city and barangay, then press View Schedule.</span></li>' +
+                '<li><i class="fa-solid fa-circle-check"></i> <span><strong>Where do I bring batteries?</strong> Search "battery" and tap Find Recycling Centers Near You.</span></li>' +
+              '</ul>'
+      }
+    };
+
+    document.querySelectorAll('[data-info]').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        const info = INFO[link.dataset.info];
+        if (!info) return;
+        document.getElementById('infoTitle').textContent = info.title;
+        document.getElementById('infoBody').innerHTML = info.body;
+        openOverlay('infoModal');
+      });
+    });
+
+    const MONTH_NAMES = ['January','February','March','April','May','June',
+                         'July','August','September','October','November','December'];
+    const DAY_HEADERS = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+
+    const COLLECTION_TYPES = {
+      0: { key: 'biodegradable', name: 'Biodegradable', color: '#208e3a', icon: 'fa-leaf' },
+      1: { key: 'biodegradable', name: 'Biodegradable', color: '#208e3a', icon: 'fa-leaf' },
+      2: { key: 'recyclable',    name: 'Recyclable',    color: '#e8b32a', icon: 'fa-recycle' },
+      3: { key: 'residual',      name: 'Residual',      color: '#1b659c', icon: 'fa-trash-can' },
+      4: { key: 'recyclable',    name: 'Recyclable',    color: '#e8b32a', icon: 'fa-recycle' },
+      5: { key: 'hazardous',     name: 'Hazardous',     color: '#d64a3b', icon: 'fa-triangle-exclamation' },
+      6: { key: 'residual',      name: 'Residual',      color: '#1b659c', icon: 'fa-trash-can' }
+    };
+
+    const today = new Date();
+    let calYear  = today.getFullYear();
+    let calMonth = today.getMonth();
+
+    const calendarGrid = document.getElementById('calendarGrid');
+    const calMonthLabel = document.getElementById('calMonthLabel');
+
+    function renderCalendar() {
+      calMonthLabel.textContent = MONTH_NAMES[calMonth] + ' ' + calYear;
+
+      const firstWeekday = new Date(calYear, calMonth, 1).getDay();
+      const daysInMonth  = new Date(calYear, calMonth + 1, 0).getDate();
+
+      let html = DAY_HEADERS.map(function (d) {
+        return '<div class="cal-day-header">' + d + '</div>';
+      }).join('');
+
+      for (let i = 0; i < firstWeekday; i++) {
+        html += '<div class="cal-date" style="cursor:default;"></div>';
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const weekday = (firstWeekday + day - 1) % 7;
+        const type = COLLECTION_TYPES[weekday];
+
+        let ind = 'ind-green';
+        if (type.key === 'recyclable') ind = 'ind-yellow';
+        else if (type.key === 'residual') ind = 'ind-blue';
+        else if (type.key === 'hazardous') ind = 'ind-red';
+
+        const isToday = (day === today.getDate() &&
+                         calMonth === today.getMonth() &&
+                         calYear === today.getFullYear());
+
+        html += '<div class="cal-date has-indicator ' + ind + (isToday ? ' today' : '') + '" ' +
+                     'data-day="' + day + '" data-wd="' + weekday + '">' + day + '</div>';
+      }
+
+      calendarGrid.innerHTML = html;
+
+      calendarGrid.querySelectorAll('.cal-date[data-day]').forEach(function (cell) {
+        cell.addEventListener('click', function () {
+          calendarGrid.querySelectorAll('.cal-date').forEach(function (c) { c.classList.remove('selected'); });
+          cell.classList.add('selected');
+
+          const type = COLLECTION_TYPES[Number(cell.dataset.wd)];
+          showToast(MONTH_NAMES[calMonth] + ' ' + cell.dataset.day + ' · ' + type.name + ' collection',
+                    type.icon);
+        });
+      });
+    }
+
+    document.getElementById('prevMonth').addEventListener('click', function () {
+      calMonth--;
+      if (calMonth < 0) { calMonth = 11; calYear--; }
+      renderCalendar();
+    });
+
+    document.getElementById('nextMonth').addEventListener('click', function () {
+      calMonth++;
+      if (calMonth > 11) { calMonth = 0; calYear++; }
+      renderCalendar();
+    });
+
+    renderCalendar();
+
+    function renderUpcoming() {
+      const container = document.getElementById('upcomingList');
+      const out = [];
+      const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+
+      while (out.length < 3) {
+        const type = COLLECTION_TYPES[d.getDay()];
+        out.push({
+          date: new Date(d),
+          type: type
+        });
+        d.setDate(d.getDate() + 1);
+      }
+
+      container.innerHTML = out.map(function (o) {
+        const label = MONTH_NAMES[o.date.getMonth()].slice(0, 3) + ' ' + o.date.getDate() + ', ' + o.date.getFullYear() +
+                      ' • ' + DAY_HEADERS[o.date.getDay()].charAt(0) + DAY_HEADERS[o.date.getDay()].slice(1).toLowerCase();
+        return '<div class="upcoming-card">' +
+                 '<div class="upcoming-icon" style="background:' + o.type.color + ';">' +
+                   '<i class="fa-solid ' + o.type.icon + '"></i>' +
+                 '</div>' +
+                 '<div class="upcoming-info">' +
+                   '<h5>' + label + '</h5>' +
+                   '<p><strong>' + o.type.name + '</strong><br>7:00 AM - 10:00 AM</p>' +
+                 '</div>' +
+               '</div>';
+      }).join('');
+    }
+
+    renderUpcoming();
+
+    const citySelect = document.getElementById('citySelect');
+    const brgySelect = document.getElementById('brgySelect');
+
+    document.getElementById('viewScheduleBtn').addEventListener('click', function () {
+      const city = citySelect.value;
+      const brgy = brgySelect.value;
+
+      document.getElementById('calendarSub').textContent = brgy + ', ' + city;
+
+      document.querySelectorAll('.legend-item').forEach(function (li) {
+        li.classList.add('highlight');
+      });
+
+      showToast('Showing schedule for ' + brgy + ', ' + city, 'fa-calendar-check');
+    });
+
+    let reminderOn = false;
+    const reminderToggle = document.getElementById('reminderToggle');
+    const reminderIcon   = document.getElementById('reminderIcon');
+
+    reminderToggle.addEventListener('click', function () {
+      reminderOn = !reminderOn;
+
+      if (reminderOn) {
+        reminderIcon.className = 'fa-solid fa-bell';
+        reminderIcon.style.color = '#2d7a4a';
+        showToast('Reminders turned ON', 'fa-bell');
+      } else {
+        reminderIcon.className = 'fa-regular fa-bell-slash';
+        reminderIcon.style.color = '#888';
+        showToast('Reminders turned OFF', 'fa-bell-slash');
+      }
+    });
+
+    document.querySelectorAll('.browse-card').forEach(function (card) {
+      card.addEventListener('click', function () {
+        const guide = card.dataset.guide;
+        if (guide) openGuide(guide);
+      });
+    });
+
+  })();
+</script>
+
+</body>
+</html> 
