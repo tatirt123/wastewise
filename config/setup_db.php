@@ -307,6 +307,13 @@ try {
         // Friday (5): Hazardous (cat 4)
         $stmtSched->execute(['Lapu-Lapu City', 'Subabasbas', 'OSMEÑA Rd.', 4, 5, '08:00:00', '11:00:00', 'Pending', 5]);
 
+        // Route 1 - North District schedule
+        $stmtSched->execute(['North District', 'North District', 'Banilad', 1, 1, '08:00:00', '08:45:00', 'Completed', 1]);
+        $stmtSched->execute(['North District', 'North District', 'Talamban', 2, 1, '08:45:00', '09:30:00', 'Completed', 2]);
+        $stmtSched->execute(['North District', 'North District', 'Pari-an', 3, 1, '09:30:00', '10:15:00', 'In Progress', 3]);
+        $stmtSched->execute(['North District', 'North District', 'Busay', 2, 1, '10:15:00', '11:00:00', 'Pending', 4]);
+        $stmtSched->execute(['North District', 'North District', 'Guadalupe', 4, 1, '11:00:00', '12:00:00', 'Pending', 5]);
+
         // Basak & Marigondon schedules
         $stmtSched->execute(['Lapu-Lapu City', 'Basak', 'Basak Highway', 1, 1, '06:00:00', '09:00:00', 'Scheduled', 1]);
         $stmtSched->execute(['Lapu-Lapu City', 'Basak', 'Basak Highway', 2, 2, '06:00:00', '09:00:00', 'Scheduled', 2]);

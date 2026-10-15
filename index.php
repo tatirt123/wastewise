@@ -402,7 +402,7 @@ $currentUser = getLoggedInUser($pdo);
                     </h1>
 
                     <p class="text-gray-300 text-base sm:text-lg leading-relaxed text-shadow-sm">
-                        <strong class="text-white font-semibold">WasteWise</strong> is a smart waste segregation assistant designed to help you identify, segregate, and properly dispose of different types of waste. Connected directly to MySQL database <span class="text-emerald-300 font-semibold">tatang</span>.
+                        <strong class="text-white font-semibold">WasteWise</strong> is a smart waste segregation assistant designed to help you identify, segregate, and properly dispose of different types of waste. Connected directly to MySQL database <span class="text-emerald-300 font-semibold"></span>.
                     </p>
 
                     <div class="flex flex-wrap items-center gap-4 pt-2">
@@ -411,88 +411,11 @@ $currentUser = getLoggedInUser($pdo);
                                 Go to Dashboard <i class="fa-solid fa-arrow-right ml-2.5 text-xs"></i>
                             </a>
                         <?php else: ?>
-                            <button id="heroSignupBtn" class="inline-flex items-center justify-center px-7 py-3 bg-emerald-700 hover:bg-emerald-600 text-white font-medium text-sm rounded-full shadow-lg shadow-emerald-900/40 transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5">
-                                Get Started
-                                <i class="fa-solid fa-arrow-right ml-2.5 text-xs"></i>
-                            </button>
-                            <button id="heroLoginBtn" class="inline-flex items-center justify-center px-7 py-3 bg-white/10 hover:bg-white/15 text-white border border-white/20 font-medium text-sm rounded-full backdrop-blur transition-all duration-200">
-                                <i class="fa-solid fa-right-to-bracket mr-2 text-xs"></i> Log In
-                            </button>
+                            
                         <?php endif; ?>
                     </div>
                 </div>
-
-                <!-- Dashboard Mockup -->
-                <div class="lg:col-span-7 relative">
-                    <div class="relative glass-soft rounded-3xl p-4 sm:p-6 lg:p-8">
-                        <div class="absolute -right-4 -bottom-4 sm:-right-8 sm:-bottom-8 w-32 h-32 sm:w-48 sm:h-48 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none"></div>
-
-                        <div class="hidden sm:flex absolute -right-6 bottom-12 w-28 h-40 bg-emerald-700 rounded-3xl shadow-xl flex-col items-center justify-center text-white border-4 border-white/80 transform rotate-6 z-20">
-                            <i class="fa-solid fa-trash-can text-4xl mb-2 text-emerald-200"></i>
-                            <i class="fa-solid fa-recycle text-3xl text-white"></i>
-                            <div class="text-[10px] font-bold tracking-widest uppercase mt-2 text-emerald-100">ECO BIN</div>
-                        </div>
-
-                        <div class="bg-white rounded-2xl dashboard-shadow border border-gray-100 p-4 sm:p-6 relative z-10 text-gray-700">
-                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 border-b border-gray-100">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-6 h-6 rounded-md bg-emerald-600 flex items-center justify-center text-white text-xs">
-                                        <i class="fa-solid fa-recycle"></i>
-                                    </div>
-                                    <span class="font-bold text-gray-800 text-sm">WasteWise</span>
-                                </div>
-                                <div class="flex items-center space-x-2 bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100">
-                                    <div class="w-5 h-5 rounded-full bg-emerald-700 text-white flex items-center justify-center text-[10px] font-semibold">U</div>
-                                    <span class="text-xs font-medium text-gray-700"><?php echo htmlspecialchars($currentUser['name'] ?? 'Waste Warrior'); ?></span>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mt-4">
-                                <div class="hidden md:block md:col-span-3 space-y-1 text-xs">
-                                    <a href="dashboard.php" class="flex items-center space-x-2 px-3 py-2 bg-emerald-50 text-emerald-800 font-semibold rounded-lg"><i class="fa-solid fa-house text-emerald-600"></i><span>Home</span></a>
-                                    <a href="dashboard.php#search-result" class="flex items-center space-x-2 px-3 py-2 text-gray-500 hover:bg-gray-50 rounded-lg"><i class="fa-solid fa-magnifying-glass"></i><span>Wise Search</span></a>
-                                    <a href="dashboard.php#schedule" class="flex items-center space-x-2 px-3 py-2 text-gray-500 hover:bg-gray-50 rounded-lg"><i class="fa-regular fa-calendar"></i><span>Schedule</span></a>
-                                    <a href="dashboard.php#community" class="flex items-center space-x-2 px-3 py-2 text-gray-500 hover:bg-gray-50 rounded-lg"><i class="fa-solid fa-recycle"></i><span>Recycling</span></a>
-                                    <a href="dashboard.php#community" class="flex items-center space-x-2 px-3 py-2 text-gray-500 hover:bg-gray-50 rounded-lg"><i class="fa-solid fa-users"></i><span>Community</span></a>
-                                </div>
-
-                                <div class="col-span-1 md:col-span-9 space-y-4">
-                                    <div>
-                                        <h3 class="text-sm font-bold text-gray-800">Good day, <?php echo htmlspecialchars($currentUser['name'] ?? 'Waste Warrior'); ?>!</h3>
-                                        <p class="text-[11px] text-gray-500">Let's make a positive impact today.</p>
-                                    </div>
-
-                                    <div class="relative">
-                                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                                        <input type="text" placeholder="What waste do you want to dispose?" class="w-full text-xs pl-8 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-emerald-500 focus:bg-white transition-all placeholder:text-gray-400">
-                                    </div>
-
-                                    <!-- Real Impact Counters from DB tatang -->
-                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                        <div class="bg-emerald-50/60 border border-emerald-100 p-2 rounded-xl flex items-center space-x-2">
-                                            <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-tree"></i></div>
-                                            <div class="overflow-hidden"><div class="text-xs font-bold text-gray-800 leading-none"><?php echo htmlspecialchars($stats['trees_saved'] ?? '1,245'); ?></div><div class="text-[9px] text-gray-500 truncate mt-0.5">Trees Saved</div></div>
-                                        </div>
-                                        <div class="bg-emerald-50/60 border border-emerald-100 p-2 rounded-xl flex items-center space-x-2">
-                                            <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-recycle"></i></div>
-                                            <div class="overflow-hidden"><div class="text-xs font-bold text-gray-800 leading-none"><?php echo htmlspecialchars($stats['kg_recycled'] ?? '3,678'); ?> kg</div><div class="text-[9px] text-gray-500 truncate mt-0.5">Recycled</div></div>
-                                        </div>
-                                        <div class="bg-emerald-50/60 border border-emerald-100 p-2 rounded-xl flex items-center space-x-2">
-                                            <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-users"></i></div>
-                                            <div class="overflow-hidden"><div class="text-xs font-bold text-gray-800 leading-none"><?php echo htmlspecialchars($stats['active_users'] ?? '892'); ?></div><div class="text-[9px] text-gray-500 truncate mt-0.5">Users</div></div>
-                                        </div>
-                                        <div class="bg-emerald-50/60 border border-emerald-100 p-2 rounded-xl flex items-center space-x-2">
-                                            <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-leaf"></i></div>
-                                            <div class="overflow-hidden"><div class="text-xs font-bold text-gray-800 leading-none"><?php echo htmlspecialchars($stats['co2_saved'] ?? '12.5'); ?> tons</div><div class="text-[9px] text-gray-500 truncate mt-0.5">CO₂ Saved</div></div>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                                        <div class="bg-emerald-50 border border-emerald-200/80 rounded-xl p-3 text-center"><div class="w-8 h-8 mx-auto rounded-full bg-emerald-200 text-emerald-800 flex items-center justify-center text-sm mb-1.5"><i class="fa-solid fa-leaf"></i></div><span class="text-[11px] font-bold text-emerald-900 block">Biodegradable</span></div>
-                                        <div class="bg-blue-50 border border-blue-200/80 rounded-xl p-3 text-center"><div class="w-8 h-8 mx-auto rounded-full bg-blue-200 text-blue-700 flex items-center justify-center text-sm mb-1.5"><i class="fa-solid fa-recycle"></i></div><span class="text-[11px] font-bold text-blue-900 block">Recyclable</span></div>
-                                        <div class="bg-gray-100 border border-gray-200 rounded-xl p-3 text-center"><div class="w-8 h-8 mx-auto rounded-full bg-gray-200 text-gray-700 flex items-center justify-center text-sm mb-1.5"><i class="fa-solid fa-trash-can"></i></div><span class="text-[11px] font-bold text-gray-800 block">Residual</span></div>
-                                        <div class="bg-rose-50 border border-rose-200/80 rounded-xl p-3 text-center"><div class="w-8 h-8 mx-auto rounded-full bg-rose-200 text-rose-700 flex items-center justify-center text-sm mb-1.5"><i class="fa-solid fa-triangle-exclamation"></i></div><span class="text-[11px] font-bold text-rose-900 block">Hazardous</span></div>
-                                    </div>
+              
                                 </div>
                             </div>
                         </div>
@@ -747,7 +670,7 @@ $currentUser = getLoggedInUser($pdo);
             </div>
 
             <div class="auth-footer-note">
-                <i class="fas fa-lock"></i> secure · <span>WasteWise &middot; tatang DB</span>
+                <i class="fas fa-lock"></i> secure · <span>WasteWise &middot; </span>
             </div>
         </div>
     </div>

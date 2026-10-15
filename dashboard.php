@@ -98,6 +98,38 @@ try {
     $stmtLogs->execute([$user['id']]);
     $activityLogs = $stmtLogs->fetchAll();
 } catch (Exception $e) { /* fallback */ }
+
+// Fetch initial collection schedules for user's city & barangay from tatang DB
+$userSchedules = [];
+try {
+    $stmtSched = $pdo->prepare("
+        SELECT cs.*, wc.name AS category_name, wc.slug AS category_slug, wc.color AS category_color, wc.icon AS category_icon
+        FROM `collection_schedules` cs
+        JOIN `waste_categories` wc ON cs.waste_category_id = wc.id
+        WHERE cs.city = ? AND cs.barangay = ?
+        ORDER BY 
+            CASE WHEN cs.collection_date IS NOT NULL THEN cs.collection_date ELSE '9999-12-31' END ASC,
+            cs.day_of_week ASC, 
+            cs.start_time ASC
+    ");
+    $stmtSched->execute([$user['city'], $user['barangay']]);
+    $userSchedules = $stmtSched->fetchAll(PDO::FETCH_ASSOC);
+
+    if (empty($userSchedules)) {
+        $stmtSchedCity = $pdo->prepare("
+            SELECT cs.*, wc.name AS category_name, wc.slug AS category_slug, wc.color AS category_color, wc.icon AS category_icon
+            FROM `collection_schedules` cs
+            JOIN `waste_categories` wc ON cs.waste_category_id = wc.id
+            WHERE cs.city = ?
+            ORDER BY 
+                CASE WHEN cs.collection_date IS NOT NULL THEN cs.collection_date ELSE '9999-12-31' END ASC,
+                cs.day_of_week ASC, 
+                cs.start_time ASC
+        ");
+        $stmtSchedCity->execute([$user['city']]);
+        $userSchedules = $stmtSchedCity->fetchAll(PDO::FETCH_ASSOC);
+    }
+} catch (Exception $e) { /* fallback */ }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -106,7 +138,11 @@ try {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Waste Wise · Eco Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+  <style>
+    .category-section { display: none !important; }
+    .category-section.show { display: block !important; }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -145,7 +181,7 @@ try {
     <section class="hero-section" id="home">
       <div class="hero-text">
         <h2>Hello, <?php echo htmlspecialchars($user['name']); ?> </h2>
-        <p>Small actions today, greener tomorrow. <span style="font-size:0.85em; opacity:0.8;">(Connected to tatang DB)</span></p>
+        <p>Small actions today, greener tomorrow. <span style="font-size:0.85em; opacity:0.8;">(Connected to database DB)</span></p>
       </div>
     </section>
 
@@ -155,11 +191,11 @@ try {
       </div>
 
       <div class="cards-grid">
-        <div class="card">
+        <div class="card" onclick="navigateTo('recyclable-screen')" style="cursor: pointer;">
           <div class="card-icon green-bg"><i class="fa-solid fa-book-open"></i></div>
           <h4>Recycle Guide</h4>
           <p>Learn how to segregate waste properly.</p>
-          <button class="card-action" data-guide="biodegradable">Learn more <i class="fa-solid fa-arrow-right"></i></button>
+          <button class="card-action" type="button" onclick="event.stopPropagation(); navigateTo('recyclable-screen');">Learn more <i class="fa-solid fa-arrow-right"></i></button>
         </div>
 
         <div class="card">
@@ -183,9 +219,201 @@ try {
           <button class="card-action" id="openClimateBtn">Learn more <i class="fa-solid fa-arrow-right"></i></button>
         </div>
       </div>
+
+      <!-- Quick Actions Detail Screens Container -->
+      <div class="recycle-guide-screens-wrap">
+        <!-- ================= SCREEN 2: RECYCLABLE ================= -->
+        <div id="recyclable-screen" class="screen">
+          <div class="detail-layout">
+            <!-- Sidebar Navigation -->
+            <div class="sidebar">
+              <button type="button" class="sidebar-btn" onclick="navigateTo('biodegradable-screen')">
+                <span>♻️</span> Biodegradable
+              </button>
+              <button type="button" class="sidebar-btn active" onclick="navigateTo('recyclable-screen')">
+                <span>♻️</span> Recyclable
+              </button>
+              <button type="button" class="sidebar-btn" onclick="navigateTo('residual-screen')">
+                <span>🗑️</span> Residual
+              </button>
+              <button type="button" class="sidebar-btn" onclick="navigateTo('hazardous-screen')">
+                <span>⚠️</span> Hazardous
+              </button>
+              
+              <button type="button" class="back-btn" onclick="navigateTo('home-screen')">
+                ← Back to Home
+              </button>
+            </div>
+
+            <!-- Main Content -->
+            <div class="content-area">
+              <div class="content-header">
+                <h2>Recyclable</h2>
+                <p>Waste materials that can be collected, processed, and made into new products.</p>
+              </div>
+
+              <div class="examples-row">
+                <div class="example-item">
+                  <div class="img-placeholder">🧴</div>
+                  <span>Plastic Bottle</span>
+                </div>
+                <div class="example-item">
+                  <div class="img-placeholder">🍾</div>
+                  <span>Glass Bottle</span>
+                </div>
+                <div class="example-item">
+                  <div class="img-placeholder">📦</div>
+                  <span>Card Board</span>
+                </div>
+              </div>
+
+              <div class="info-box">
+                <h4>Proper Segregation</h4>
+                <ul class="info-list">
+                  <li>Clean and dry recyclable materials before placing them in the recycling bin.</li>
+                  <li>Separate plastic, paper, cardboard, and glass from other types of waste.</li>
+                  <li>Remove food or liquid residue from recyclable containers.</li>
+                </ul>
+              </div>
+
+              <div class="mistakes-box">
+                <h4>Common Mistakes</h4>
+                <ul>
+                  <li>Mixing recyclable materials with food waste.</li>
+                  <li>Throwing dirty or wet recyclables into the recycling bin.</li>
+                  <li>Putting non-recyclable materials together with recyclables.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="footer-banner">Small Actions, greener tomorrow</div>
+        </div>
+
+        <!-- ================= SCREEN 3: BIODEGRADABLE ================= -->
+        <div id="biodegradable-screen" class="screen">
+          <div class="detail-layout">
+            <div class="sidebar">
+              <button type="button" class="sidebar-btn active" onclick="navigateTo('biodegradable-screen')"><span>♻️</span> Biodegradable</button>
+              <button type="button" class="sidebar-btn" onclick="navigateTo('recyclable-screen')"><span>♻️</span> Recyclable</button>
+              <button type="button" class="sidebar-btn" onclick="navigateTo('residual-screen')"><span>🗑️</span> Residual</button>
+              <button type="button" class="sidebar-btn" onclick="navigateTo('hazardous-screen')"><span>⚠️</span> Hazardous</button>
+              <button type="button" class="back-btn" onclick="navigateTo('home-screen')">← Back to Home</button>
+            </div>
+            <div class="content-area">
+              <div class="content-header">
+                <h2>Biodegradable</h2>
+                <p>Waste that comes from plants or animals and can naturally decompose.</p>
+              </div>
+              <div class="examples-row">
+                <div class="example-item"><div class="img-placeholder">🍂</div><span>Dry Leaves</span></div>
+                <div class="example-item"><div class="img-placeholder">🍌</div><span>Banana Peel</span></div>
+                <div class="example-item"><div class="img-placeholder">🍎</div><span>Apple Core</span></div>
+              </div>
+              <div class="info-box">
+                <h4>Proper Segregation</h4>
+                <ul class="info-list">
+                  <li>Place in a trash bin properly.</li>
+                  <li>Remove the non-biodegradable materials (e.g. plastic).</li>
+                  <li>Compost if possible to reduce landfill waste.</li>
+                </ul>
+              </div>
+              <div class="mistakes-box">
+                <h4>Common Mistakes</h4>
+                <ul>
+                  <li>Mixing with plastics.</li>
+                  <li>Putting biodegradable waste in the wrong bin.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="footer-banner">Small Actions, greener tomorrow</div>
+        </div>
+
+        <!-- ================= SCREEN 4: RESIDUAL ================= -->
+        <div id="residual-screen" class="screen">
+          <div class="detail-layout">
+            <div class="sidebar">
+              <button type="button" class="sidebar-btn" onclick="navigateTo('biodegradable-screen')"><span>♻️</span> Biodegradable</button>
+              <button type="button" class="sidebar-btn" onclick="navigateTo('recyclable-screen')"><span>♻️</span> Recyclable</button>
+              <button type="button" class="sidebar-btn active" onclick="navigateTo('residual-screen')"><span>🗑️</span> Residual</button>
+              <button type="button" class="sidebar-btn" onclick="navigateTo('hazardous-screen')"><span>⚠️</span> Hazardous</button>
+              <button type="button" class="back-btn" onclick="navigateTo('home-screen')">← Back to Home</button>
+            </div>
+            <div class="content-area">
+              <div class="content-header">
+                <h2>Residual</h2>
+                <p>Waste that cannot be recycled, reused, or composted and must be disposed of properly.</p>
+              </div>
+              <div class="examples-row">
+                <div class="example-item"><div class="img-placeholder">🧻</div><span>Used Tissue</span></div>
+                <div class="example-item"><div class="img-placeholder">🍬</div><span>Candy Wrapper</span></div>
+                <div class="example-item"><div class="img-placeholder">👶</div><span>Used Diaper</span></div>
+              </div>
+              <div class="info-box">
+                <h4>Proper Segregation</h4>
+                <ul class="info-list">
+                  <li>Place residual waste in the designated residual waste bin.</li>
+                  <li>Separate residual waste from recyclable, biodegradable, and hazardous waste.</li>
+                  <li>Make sure recyclable and compostable materials are removed before disposal.</li>
+                </ul>
+              </div>
+              <div class="mistakes-box">
+                <h4>Common Mistakes</h4>
+                <ul>
+                  <li>Putting recyclable bottles in the residual bin.</li>
+                  <li>Mixing food scraps with residual waste.</li>
+                  <li>Throwing batteries or chemicals with residual waste.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="footer-banner">Small Actions, greener tomorrow</div>
+        </div>
+
+        <!-- ================= SCREEN 5: HAZARDOUS ================= -->
+        <div id="hazardous-screen" class="screen">
+          <div class="detail-layout">
+            <div class="sidebar">
+              <button type="button" class="sidebar-btn" onclick="navigateTo('biodegradable-screen')"><span>♻️</span> Biodegradable</button>
+              <button type="button" class="sidebar-btn" onclick="navigateTo('recyclable-screen')"><span>♻️</span> Recyclable</button>
+              <button type="button" class="sidebar-btn" onclick="navigateTo('residual-screen')"><span>🗑️</span> Residual</button>
+              <button type="button" class="sidebar-btn active" onclick="navigateTo('hazardous-screen')"><span>⚠️</span> Hazardous</button>
+              <button type="button" class="back-btn" onclick="navigateTo('home-screen')">← Back to Home</button>
+            </div>
+            <div class="content-area">
+              <div class="content-header">
+                <h2>Hazardous</h2>
+                <p>Waste that can harm people, animals, or the environment if it is not handled and disposed of properly.</p>
+              </div>
+              <div class="examples-row">
+                <div class="example-item"><div class="img-placeholder">🔋</div><span>Battery</span></div>
+                <div class="example-item"><div class="img-placeholder">💡</div><span>Light Bulb</span></div>
+                <div class="example-item"><div class="img-placeholder">🧪</div><span>Chemical Container</span></div>
+              </div>
+              <div class="info-box">
+                <h4>Proper Segregation</h4>
+                <ul class="info-list">
+                  <li>Keep hazardous waste separate from regular household waste.</li>
+                  <li>Place batteries, chemicals, and other hazardous materials in the proper collection container.</li>
+                  <li>Handle hazardous waste carefully and follow the disposal instructions provided.</li>
+                </ul>
+              </div>
+              <div class="mistakes-box">
+                <h4>Common Mistakes</h4>
+                <ul>
+                  <li>Throwing batteries into the regular trash bin.</li>
+                  <li>Mixing chemicals with other types of waste.</li>
+                  <li>Pouring hazardous liquids onto the ground.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="footer-banner">Small Actions, greener tomorrow</div>
+        </div>
+      </div>
     </section>
 
-    <!-- IMPACT STATS (Connected to tatang DB) -->
+    <!-- IMPACT STATS (Connected to database DB) -->
     <section class="section" id="our-impact">
       <div class="section-title">
         <i class="fa-solid fa-chart-simple" style="color:#2d7a4a;"></i> Our Impact
@@ -239,31 +467,31 @@ try {
       </div>
 
       <!-- BROWSE BY CATEGORY -->
-      <div class="browse-category-wrap">
+      <div class="browse-category-wrap" id="browseCategoryWrap">
         <h3 class="browse-category-title">Browse by category</h3>
         <div class="browse-category-grid">
-          <div class="browse-card" data-guide="biodegradable">
+          <div class="browse-card" data-guide="biodegradable" onclick="openCategory('biodegradable')">
             <div class="browse-card-icon green-bg"><i class="fa-solid fa-leaf"></i></div>
             <h4>Biodegradable</h4>
             <p>Food, plants, paper, etc.</p>
             <span class="browse-link">Learn more <i class="fa-solid fa-arrow-right"></i></span>
           </div>
 
-          <div class="browse-card" data-guide="recyclable">
+          <div class="browse-card" data-guide="recyclable" onclick="openCategory('recyclable')">
             <div class="browse-card-icon yellow-bg"><i class="fa-solid fa-recycle"></i></div>
             <h4>Recyclable</h4>
             <p>Plastic, glass, metal, paper</p>
             <span class="browse-link">Learn more <i class="fa-solid fa-arrow-right"></i></span>
           </div>
 
-          <div class="browse-card" data-guide="residual">
+          <div class="browse-card" data-guide="residual" onclick="openCategory('residual')">
             <div class="browse-card-icon blue-bg"><i class="fa-solid fa-trash-can"></i></div>
             <h4>Residual</h4>
             <p>Non-recyclable waste</p>
             <span class="browse-link">Learn more <i class="fa-solid fa-arrow-right"></i></span>
           </div>
 
-          <div class="browse-card" data-guide="hazardous">
+          <div class="browse-card" data-guide="hazardous" onclick="openCategory('hazardous')">
             <div class="browse-card-icon purple-bg"><i class="fa-solid fa-triangle-exclamation"></i></div>
             <h4>Hazardous</h4>
             <p>Batteries, chemicals, e-waste, etc.</p>
@@ -271,6 +499,78 @@ try {
           </div>
         </div>
       </div>
+
+      <!-- 1. BIODEGRADABLE -->
+      <section class="category-section sec-bio" id="section-biodegradable" style="display: none;">
+        <h2>♻️ Biodegradable</h2>
+        <p>Food, plants, paper, and organic waste.</p>
+        <div class="image-grid grid-bio">
+          <div class="image-box"><img src="image/3020a726-6415-4dec-a011-e7293ee92f2f.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/3020a726-6415-4dec-a011-e7293ee92f2f.jpg';" alt="Biodegradable 1"></div>
+          <div class="image-box"><img src="image/c493237d-ba3b-465c-9e70-146d1c82b366.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/c493237d-ba3b-465c-9e70-146d1c82b366.jpg';" alt="Biodegradable 2"></div>
+          <div class="image-box"><img src="image/97913337-9be6-4df1-933b-d2a1cf4c1ff1.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/97913337-9be6-4df1-933b-d2a1cf4c1ff1.jpg';" alt="Biodegradable 3"></div>
+          <div class="image-box"><img src="image/e3d544dc-9b16-402a-bf9d-7053bbd1be20.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/e3d544dc-9b16-402a-bf9d-7053bbd1be20.jpg';" alt="Biodegradable 4"></div>
+          <div class="image-box"><img src="image/5d4a0232-f47f-44d0-b5a5-659c8778e4c4.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/5d4a0232-f47f-44d0-b5a5-659c8778e4c4.jpg';" alt="Biodegradable 5"></div>
+          <div class="image-box"><img src="image/5d4a0232-f47f-44d0-b5a5-659c8778e4c4.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/5d4a0232-f47f-44d0-b5a5-659c8778e4c4.jpg';" alt="Biodegradable 6"></div>
+        </div>
+        <div class="back-bar">
+          <button class="btn-back" onclick="goHome()">← Back to Search</button>
+          <div class="footer-banner">Small Actions, greener tomorrow</div>
+        </div>
+      </section>
+
+      <!-- 2. RECYCLABLE -->
+      <section class="category-section sec-rec" id="section-recyclable" style="display: none;">
+        <h2>♻️ Recyclable</h2>
+        <p>Plastic, glass, metal, and clean paper.</p>
+        <div class="image-grid grid-rec">
+          <div class="image-box"><img src="image/0384df7d-4797-4f9f-874a-d717d08bc919.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/0384df7d-4797-4f9f-874a-d717d08bc919.jpg';" alt="Recyclable 1"></div>
+          <div class="image-box"><img src="image/83fa2945-1a4c-4462-8b7d-60433da9fde6.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/83fa2945-1a4c-4462-8b7d-60433da9fde6.jpg';" alt="Recyclable 2"></div>
+          <div class="image-box"><img src="image/d52d3cb1-75d6-4638-b4fb-18cd9c34cac1.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/d52d3cb1-75d6-4638-b4fb-18cd9c34cac1.jpg';" alt="Recyclable 3"></div>
+          <div class="image-box"><img src="image/7fb40ac0-e87e-43bf-9ffb-b6600362aabc.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/7fb40ac0-e87e-43bf-9ffb-b6600362aabc.jpg';" alt="Recyclable 4"></div>
+          <div class="image-box"><img src="image/66d75604-0a55-4865-b7b7-75ca1fa1de49.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/66d75604-0a55-4865-b7b7-75ca1fa1de49.jpg';" alt="Recyclable 5"></div>
+          <div class="image-box"><img src="image/463a08eb-f33e-4f46-a596-a00c82cc8b3c.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/463a08eb-f33e-4f46-a596-a00c82cc8b3c.jpg';" alt="Recyclable 6"></div>
+        </div>
+        <div class="back-bar">
+          <button class="btn-back" onclick="goHome()">← Back to Search</button>
+          <div class="footer-banner">Small Actions, greener tomorrow</div>
+        </div>
+      </section>
+
+      <!-- 3. RESIDUAL -->
+      <section class="category-section sec-res" id="section-residual" style="display: none;">
+        <h2>🗑️ Residual</h2>
+        <p>Non-recyclable household waste.</p>
+        <div class="image-grid grid-res">
+          <div class="image-box"><img src="image/b6c73e15-ff30-4a6f-a24e-5510ef8e0b7b (1).jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/image/b6c73e15-ff30-4a6f-a24e-5510ef8e0b7b (1).jpg';" alt="Residual 1"></div>
+          <div class="image-box"><img src="image/d1e932ba-1dfe-4e09-b467-ba92fa102bac.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/image/d1e932ba-1dfe-4e09-b467-ba92fa102bac.jpg';" alt="Residual 2"></div>
+          <div class="image-box"><img src="image/d9852cac-c026-4b39-b10b-575cab9773f1.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/image/d9852cac-c026-4b39-b10b-575cab9773f1.jpg';" alt="Residual 3"></div>
+          <div class="image-box"><img src="image/1f1d6bd9-a906-4383-954e-8f5d17f8d8bb.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/image/1f1d6bd9-a906-4383-954e-8f5d17f8d8bb.jpg';" alt="Residual 4"></div>
+          <div class="image-box"><img src="image/6a717ea1-32f1-4335-a283-a522951e0ad9.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/image/6a717ea1-32f1-4335-a283-a522951e0ad9.jpg';" alt="Residual 5"></div>
+          <div class="image-box"><img src="image/8c892e51-e13b-42f7-8e9b-852f9a8a9bdc.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/image/8c892e51-e13b-42f7-8e9b-852f9a8a9bdc.jpg';" alt="Residual 6"></div>
+        </div>
+        <div class="back-bar">
+          <button class="btn-back" onclick="goHome()">← Back to Search</button>
+          <div class="footer-banner">Small Actions, greener tomorrow</div>
+        </div>
+      </section>
+
+      <!-- 4. HAZARDOUS -->
+      <section class="category-section sec-haz" id="section-hazardous" style="display: none;">
+        <h2>⚠️ Hazardous</h2>
+        <p>Batteries, chemicals, e-waste, and toxic items.</p>
+        <div class="image-grid grid-haz">
+          <div class="image-box"><img src="image/765c934b-09fe-466c-a2e4-d17be62444d7.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/image/765c934b-09fe-466c-a2e4-d17be62444d7.jpg';" alt="Hazardous 1"></div>
+          <div class="image-box"><img src="image/a57a9c41-0805-479e-9aba-a06f6deda3f5.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/image/a57a9c41-0805-479e-9aba-a06f6deda3f5.jpg';" alt="Hazardous 2"></div>
+          <div class="image-box"><img src="image/b316bd5e-9945-4e3b-9143-3061c527f090.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/image/b316bd5e-9945-4e3b-9143-3061c527f090.jpg';" alt="Hazardous 3"></div>
+          <div class="image-box"><img src="image/d46b2fc7-0750-4aca-913b-a964b46a76cc.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/image/d46b2fc7-0750-4aca-913b-a964b46a76cc.jpg';" alt="Hazardous 4"></div>
+          <div class="image-box"><img src="image/6de8bc3c-448c-4264-83d8-20aba2d137f7.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/image/6de8bc3c-448c-4264-83d8-20aba2d137f7.jpg';" alt="Hazardous 5"></div>
+          <div class="image-box"><img src="image/545de97d-9a1c-4eea-9096-e3b004bf1834.jpg" onerror="this.onerror=null; this.src='c:/Aizen1/image/image/545de97d-9a1c-4eea-9096-e3b004bf1834.jpg';" alt="Hazardous 6"></div>
+        </div>
+        <div class="back-bar">
+          <button class="btn-back" onclick="goHome()">← Back to Search</button>
+          <div class="footer-banner">Small Actions, greener tomorrow</div>
+        </div>
+      </section>
 
       <div class="detail-section-wrapper" id="searchResult">
         <div class="detail-container">
@@ -339,7 +639,41 @@ try {
               <option value="Punta Engaño">Punta Engaño</option>
             </select>
 
-            <button class="view-btn" id="viewScheduleBtn">View Schedule</button>
+            <button class="view-btn" id="viewScheduleBtn">Submit</button>
+          </div>
+
+          <div class="schedule-location-box" style="margin-top: 0.8rem;">
+            <h4><i class="fa-regular fa-calendar-plus" style="color: #2d7a4a;"></i> Add / Enter Schedule</h4>
+            <p style="font-size: 0.72rem; color: #666; margin-bottom: 0.6rem;">Schedule a collection date or route for your area.</p>
+
+            <label for="newSchedDate" style="font-size: 0.75rem; color: #666; display: block; margin-bottom: 0.2rem;">Collection Date</label>
+            <input type="date" class="select-field" id="newSchedDate" style="width: 100%; margin-bottom: 0.6rem; padding: 0.45rem 0.6rem; font-family: inherit; font-size: 0.85rem;">
+
+            <label for="newSchedCat" style="font-size: 0.75rem; color: #666; display: block; margin-bottom: 0.2rem;">Waste Category</label>
+            <select class="select-field" id="newSchedCat" style="width: 100%; margin-bottom: 0.6rem;">
+              <option value="1">Biodegradable</option>
+              <option value="2">Recyclable</option>
+              <option value="3">Residual</option>
+              <option value="4">Hazardous</option>
+            </select>
+
+            <label for="newSchedStreet" style="font-size: 0.75rem; color: #666; display: block; margin-bottom: 0.2rem;">Route / Street</label>
+            <input type="text" class="select-field" id="newSchedStreet" placeholder="e.g. Rizal St. or Main Ave." style="width: 100%; margin-bottom: 0.6rem; padding: 0.45rem 0.6rem; font-family: inherit; font-size: 0.85rem;">
+
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.8rem;">
+              <div style="flex: 1;">
+                <label for="newSchedStart" style="font-size: 0.7rem; color: #666; display: block; margin-bottom: 0.2rem;">Start Time</label>
+                <input type="time" class="select-field" id="newSchedStart" value="07:00" style="width: 100%; padding: 0.35rem 0.5rem; font-family: inherit; font-size: 0.85rem;">
+              </div>
+              <div style="flex: 1;">
+                <label for="newSchedEnd" style="font-size: 0.7rem; color: #666; display: block; margin-bottom: 0.2rem;">End Time</label>
+                <input type="time" class="select-field" id="newSchedEnd" value="10:00" style="width: 100%; padding: 0.35rem 0.5rem; font-family: inherit; font-size: 0.85rem;">
+              </div>
+            </div>
+
+            <button class="view-btn" id="saveScheduleBtn" style="width: 100%;">
+              <i class="fa-solid fa-plus"></i> Save Schedule
+            </button>
           </div>
         </div>
 
@@ -578,7 +912,7 @@ try {
     </section>
 
     <footer class="footer">
-      <div style="text-align:center; width:100%; margin-bottom:.4rem;">&copy; 2026 WasteWise &middot; Connected to Database <span style="color:#2d7a4a; font-weight:bold;">tatang</span></div>
+      <div style="text-align:center; width:100%; margin-bottom:.4rem;">&copy; 2026 WasteWise &middot; Connected to Database <span style="color:#2d7a4a; font-weight:bold;">DB</span></div>
       <div style="display:flex; justify-content:center; width:100%; gap: 1.5rem;">
         <a data-info="privacy" style="cursor:pointer;">Privacy Policy</a>
         <a data-info="terms" style="cursor:pointer;">Terms of Service</a>
@@ -701,43 +1035,9 @@ try {
         <i class="fa-solid fa-xmark"></i>
       </button>
       <h2><i class="fa-solid fa-calendar-check" style="color:#2d7a4a;"></i> Upcoming Collections</h2>
-      <p class="simple-sub">Here are your scheduled garbage collection days in <?php echo htmlspecialchars($user['barangay']); ?>.</p>
+      <p class="simple-sub">Here are your scheduled garbage collection days in <span id="viewAllModalBrgy"><?php echo htmlspecialchars($user['barangay']); ?></span>, <?php echo htmlspecialchars($user['city']); ?>.</p>
 
-      <div class="full-schedule-item">
-        <div class="center-icon" style="background:#dff0e6;color:#208e3a;"><i class="fa-solid fa-leaf"></i></div>
-        <div class="center-info">
-          <h5>Biodegradable Waste</h5>
-          <p>Sunday &amp; Monday<br>7:00 AM – 10:00 AM</p>
-        </div>
-        <button class="reminder-btn">Set Reminder</button>
-      </div>
-
-      <div class="full-schedule-item">
-        <div class="center-icon" style="background:#f5edd6;color:#c2931a;"><i class="fa-solid fa-recycle"></i></div>
-        <div class="center-info">
-          <h5>Recyclable Waste</h5>
-          <p>Tuesday &amp; Thursday<br>7:00 AM – 10:00 AM</p>
-        </div>
-        <button class="reminder-btn">Set Reminder</button>
-      </div>
-
-      <div class="full-schedule-item">
-        <div class="center-icon" style="background:#d6eaf3;color:#1b659c;"><i class="fa-solid fa-trash-can"></i></div>
-        <div class="center-info">
-          <h5>Residual Waste</h5>
-          <p>Wednesday &amp; Saturday<br>7:00 AM – 10:00 AM</p>
-        </div>
-        <button class="reminder-btn">Set Reminder</button>
-      </div>
-
-      <div class="full-schedule-item">
-        <div class="center-icon" style="background:#e8dff0;color:#d64a3b;"><i class="fa-solid fa-triangle-exclamation"></i></div>
-        <div class="center-info">
-          <h5>Hazardous Waste</h5>
-          <p>Friday<br>7:00 AM – 10:00 AM</p>
-        </div>
-        <button class="reminder-btn">Set Reminder</button>
-      </div>
+      <div id="allUpcomingList" style="display: flex; flex-direction: column; gap: 0.8rem; margin: 1.2rem 0; max-height: 420px; overflow-y: auto;"></div>
 
       <button class="back-home-btn" data-close="viewAllImagesModal" style="margin-top: 1rem;">
         <i class="fa-solid fa-arrow-left"></i> Close
@@ -790,7 +1090,7 @@ try {
             </div>
 
             <button type="submit" id="submitReportBtn" class="primary-btn" style="background: #1b653a; color: #fff; border: none; padding: 0.85rem; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; width: 100%;">
-              <i class="fa-solid fa-paper-plane"></i> Submit Report to tatang DB
+              <i class="fa-solid fa-paper-plane"></i> Submit Report to databaseS
             </button>
           </form>
         </div>
@@ -947,6 +1247,51 @@ try {
     }
     window.showToast = showToast;
 
+    // Function to switch between screens in Quick Actions
+    function navigateTo(screenId) {
+      const screens = document.querySelectorAll('.screen');
+      if (screenId === 'home-screen') {
+        screens.forEach(function (screen) {
+          screen.classList.remove('active');
+        });
+        const quickActions = document.getElementById('quick-actions');
+        if (quickActions) {
+          quickActions.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        return;
+      }
+
+      // 1. Hide all screens
+      screens.forEach(function (screen) {
+        screen.classList.remove('active');
+      });
+
+      // 2. Show the target screen
+      const targetScreen = document.getElementById(screenId);
+      if (targetScreen) {
+        targetScreen.classList.add('active');
+
+        // 3. Update sidebar active state based on the screen (for detail pages)
+        const sidebarBtns = targetScreen.querySelectorAll('.sidebar-btn');
+        sidebarBtns.forEach(function (btn) {
+          btn.classList.remove('active');
+          const oc = btn.getAttribute('onclick') || '';
+          if (oc.indexOf(screenId) !== -1) {
+            btn.classList.add('active');
+          }
+        });
+
+        targetScreen.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      const appContainer = document.querySelector('.app-container');
+      if (appContainer) {
+        appContainer.scrollTop = 0;
+      }
+    }
+    window.navigateTo = navigateTo;
+
+
     function openOverlay(id) {
       const el = document.getElementById(id);
       if (!el) return;
@@ -1072,57 +1417,140 @@ try {
       });
     });
 
+    /* ====== CATEGORY SECTION NAVIGATION ====== */
+    function openCategory(categoryId) {
+      if (!categoryId) return;
+      const key = categoryId.toLowerCase();
+
+      // Hide all category sections first
+      document.querySelectorAll('.category-section').forEach(function (sec) {
+        sec.style.display = 'none';
+        sec.classList.remove('show');
+      });
+
+      const target = document.getElementById('section-' + key);
+      if (target) {
+        const browseWrap = document.getElementById('browseCategoryWrap');
+        if (browseWrap) browseWrap.style.display = 'none';
+        const searchRes = document.getElementById('searchResult');
+        if (searchRes) searchRes.style.display = 'none';
+
+        target.style.display = 'block';
+        target.classList.add('show');
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+    window.openCategory = openCategory;
+
+    function goHome() {
+      // Hide all category sections
+      document.querySelectorAll('.category-section').forEach(function (sec) {
+        sec.style.display = 'none';
+        sec.classList.remove('show');
+      });
+
+      // Restore browse cards and default detail box
+      const browseWrap = document.getElementById('browseCategoryWrap');
+      if (browseWrap) browseWrap.style.display = 'block';
+      const searchRes = document.getElementById('searchResult');
+      if (searchRes) searchRes.style.display = 'block';
+
+      const searchSection = document.getElementById('search-result');
+      if (searchSection) {
+        searchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      const searchInput = document.getElementById('wiseSearchInput');
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+    }
+    window.goHome = goHome;
+
     function searchWaste(rawQuery) {
       const q = (rawQuery || '').trim().toLowerCase();
       if (!q) {
-        showToast('Type an item to search — e.g. "battery"', 'fa-circle-info');
+        showToast('Type an item or category to search — e.g. "plastic", "battery", "biodegradable"', 'fa-circle-info');
         return;
       }
 
-      let foundKey = null;
-      Object.keys(wasteDB).some(function (key) {
-        const item = wasteDB[key];
-        const name = item.name.toLowerCase();
-
-        if (name === q || name.indexOf(q) !== -1 || q.indexOf(name) !== -1) {
-          foundKey = key; return true;
-        }
-        const hit = (item.keywords || []).some(function (k) {
-          return k === q || (k.length > 2 && q.indexOf(k) !== -1) || (q.length > 2 && k.indexOf(q) !== -1);
-        });
-        if (hit) { foundKey = key; return true; }
-        return false;
-      });
-
-      if (foundKey) {
-        renderItem(foundKey);
-        showToast('Found in tatang DB: ' + wasteDB[foundKey].name, 'fa-magnifying-glass');
-      } else {
-        // Query backend custom PHP API
-        fetch('api/search.php?q=' + encodeURIComponent(q))
-          .then(res => res.json())
-          .then(data => {
-            if (data.status === 'success' && data.item) {
-              const it = data.item;
-              wasteDB[it.item_key] = {
-                name: it.name,
-                category: it.category_name,
-                catKey: it.category_slug,
-                visual: { type: it.visual_type, icon: it.visual_icon },
-                where: it.where_to_throw,
-                steps: it.steps,
-                keywords: it.keywords ? it.keywords.split(',') : []
-              };
-              renderItem(it.item_key);
-              showToast('Found in DB: ' + it.name, 'fa-magnifying-glass');
-            } else {
-              showToast('No match — try "bottle", "battery", "peel"…', 'fa-circle-question');
-            }
-          })
-          .catch(() => {
-            showToast('No match — try "bottle", "battery", "peel"…', 'fa-circle-question');
-          });
+      // 1. Direct match with category names or aliases
+      let matchedCategory = null;
+      if (q === 'biodegradable' || q === 'bio' || q === 'organic' || q.indexOf('biodegradable') !== -1 || q.indexOf('organic') !== -1) {
+        matchedCategory = 'biodegradable';
+      } else if (q === 'recyclable' || q === 'recycle' || q === 'recyclables' || q.indexOf('recyclab') !== -1) {
+        matchedCategory = 'recyclable';
+      } else if (q === 'residual' || q === 'non-recyclable' || q.indexOf('residual') !== -1) {
+        matchedCategory = 'residual';
+      } else if (q === 'hazardous' || q === 'hazard' || q === 'toxic' || q.indexOf('hazard') !== -1 || q.indexOf('toxic') !== -1) {
+        matchedCategory = 'hazardous';
       }
+
+      // 2. If not a direct category name, look up in local wasteDB
+      if (!matchedCategory) {
+        let foundKey = null;
+        Object.keys(wasteDB).some(function (key) {
+          const item = wasteDB[key];
+          const name = item.name.toLowerCase();
+
+          if (name === q || name.indexOf(q) !== -1 || q.indexOf(name) !== -1) {
+            foundKey = key; return true;
+          }
+          const hit = (item.keywords || []).some(function (k) {
+            const kl = k.toLowerCase();
+            return kl === q || (kl.length > 2 && q.indexOf(kl) !== -1) || (q.length > 2 && kl.indexOf(q) !== -1);
+          });
+          if (hit) { foundKey = key; return true; }
+          return false;
+        });
+
+        if (foundKey && wasteDB[foundKey].catKey) {
+          matchedCategory = wasteDB[foundKey].catKey;
+        }
+      }
+
+      // 3. Fallback keywords dictionary for common waste items
+      if (!matchedCategory) {
+        const categoryKeywords = {
+          biodegradable: ['banana', 'peel', 'food', 'leaves', 'leaf', 'vegetable', 'fruit', 'apple', 'bread', 'compost', 'plants', 'meat', 'egg', 'fish', 'rice', 'leftover', 'garden', 'grass', 'coffee'],
+          recyclable: ['bottle', 'plastic', 'can', 'tin', 'paper', 'cardboard', 'glass', 'box', 'carton', 'newspaper', 'metal', 'aluminum', 'jar', 'magazine'],
+          residual: ['diaper', 'napkin', 'styrofoam', 'sachet', 'wrapper', 'ceramics', 'sanitary', 'straw', 'candy', 'cigarette', 'tissue', 'cotton', 'plastic bag', 'single-use', 'cellophane', 'straws'],
+          hazardous: ['battery', 'batteries', 'chemical', 'paint', 'bulb', 'fluorescent', 'mercury', 'electronics', 'e-waste', 'ewaste', 'medicine', 'pesticide', 'spray', 'thermometer', 'solvent', 'cleaning']
+        };
+
+        for (const cat in categoryKeywords) {
+          const words = categoryKeywords[cat];
+          if (words.some(function (w) { return q.indexOf(w) !== -1 || w.indexOf(q) !== -1; })) {
+            matchedCategory = cat;
+            break;
+          }
+        }
+      }
+
+      // 4. If matched, open that category section!
+      if (matchedCategory) {
+        openCategory(matchedCategory);
+        showToast('Opened ' + (CATEGORY_STYLE[matchedCategory] ? CATEGORY_STYLE[matchedCategory].label : matchedCategory) + ' category', 'fa-folder-open');
+        return;
+      }
+
+      // 5. Query backend custom PHP API as fallback
+      fetch('api/search.php?q=' + encodeURIComponent(q))
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data.status === 'success' && data.item && data.item.category_slug) {
+            const cat = data.item.category_slug.toLowerCase();
+            if (CATEGORY_STYLE[cat]) {
+              openCategory(cat);
+              showToast('Opened ' + CATEGORY_STYLE[cat].label + ' category for "' + data.item.name + '"', 'fa-folder-open');
+              return;
+            }
+          }
+          showToast('No category match — try "bottle", "battery", "peel" or category name', 'fa-circle-question');
+        })
+        .catch(function () {
+          showToast('No category match — try "bottle", "battery", "peel" or category name', 'fa-circle-question');
+        });
     }
 
     document.getElementById('wiseSearchBtn').addEventListener('click', function () {
@@ -1134,6 +1562,14 @@ try {
         e.preventDefault();
         searchWaste(this.value);
       }
+    });
+
+    // Clicking browse category cards directly opens the category section
+    document.querySelectorAll('.browse-card[data-guide]').forEach(function (card) {
+      card.addEventListener('click', function (e) {
+        e.preventDefault();
+        openCategory(this.dataset.guide);
+      });
     });
 
     // Default item display
@@ -1213,7 +1649,7 @@ try {
       document.body.style.overflow = '';
     }
 
-    document.querySelectorAll('[data-guide]').forEach(function (btn) {
+    document.querySelectorAll('[data-guide]:not(.browse-card)').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.preventDefault();
         openGuide(btn.dataset.guide);
@@ -1272,11 +1708,55 @@ try {
       });
     }
 
+    // Schedule collection reminder buttons
+    let savedReminders = {};
+    try {
+      savedReminders = JSON.parse(localStorage.getItem('wastewise_schedule_reminders') || '{}');
+    } catch (e) {
+      savedReminders = {};
+    }
+
+    document.querySelectorAll('.reminder-btn').forEach(function (btn, index) {
+      const parent = btn.closest('.full-schedule-item');
+      const title = parent && parent.querySelector('h5') ? parent.querySelector('h5').textContent.trim() : ('Collection #' + (index + 1));
+      const key = title.toLowerCase().replace(/\s+/g, '_');
+
+      // Restore previously saved state
+      if (savedReminders[key]) {
+        btn.classList.add('done');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Reminder Set';
+      }
+
+      btn.addEventListener('click', function () {
+        if (this.classList.contains('done')) {
+          this.classList.remove('done');
+          this.innerHTML = 'Set Reminder';
+          delete savedReminders[key];
+          try {
+            localStorage.setItem('wastewise_schedule_reminders', JSON.stringify(savedReminders));
+          } catch (err) {}
+          showToast('Reminder removed for ' + title, 'fa-bell-slash');
+        } else {
+          this.classList.add('done');
+          this.innerHTML = '<i class="fa-solid fa-check"></i> Reminder Set';
+          savedReminders[key] = true;
+          try {
+            localStorage.setItem('wastewise_schedule_reminders', JSON.stringify(savedReminders));
+          } catch (err) {}
+          showToast('Reminder set for ' + title, 'fa-bell');
+
+          if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+          }
+        }
+      });
+    });
+
     document.getElementById('findCenterBtn').addEventListener('click', function () {
       openOverlay('centersModal');
     });
 
-    /* ====== SUBMIT REPORT TO tatang DB ====== */
+    /* ====== SUBMIT REPORT TO Database ====== */
     document.getElementById('openReportBtn').addEventListener('click', function () {
       openOverlay('reportModal');
     });
@@ -1293,7 +1773,7 @@ try {
       e.preventDefault();
       const submitBtn = document.getElementById('submitReportBtn');
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving to tatang DB…';
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving to database DB…';
 
       const formData = new FormData(this);
       formData.append('action', 'submit');
@@ -1305,7 +1785,7 @@ try {
       .then(res => res.json())
       .then(data => {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Report to tatang DB';
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Report to database DB';
 
         if (data.status === 'success') {
           showToast(data.message, 'fa-circle-check');
@@ -1313,13 +1793,16 @@ try {
             document.getElementById('reportCount').textContent = Number(data.total_reports).toLocaleString();
           }
 
-          // Prepend to activity list
+          // Prepend to activity list with uploaded photo thumbnail
           const list = document.getElementById('activityList');
           const row = document.createElement('div');
           row.className = 'activity-item';
+          const thumbHtml = (data.photo_url) 
+            ? '<img src="' + data.photo_url + '" style="width:28px;height:28px;border-radius:6px;object-fit:cover;border:1px solid #c8dcd0;flex-shrink:0;" onerror="this.style.display=\'none\'">' 
+            : '<i class="fa-solid fa-check-circle"></i>';
           row.innerHTML =
-            '<div class="activity-item-left">' +
-              '<i class="fa-solid fa-check-circle"></i>' +
+            '<div class="activity-item-left" style="display:flex;align-items:center;gap:0.6rem;">' +
+              thumbHtml +
               '<span>' + data.action_text + '</span>' +
             '</div>' +
             '<div class="activity-date"><i class="fa-regular fa-calendar"></i> Just now</div>';
@@ -1334,7 +1817,7 @@ try {
       })
       .catch(err => {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Report to tatang DB';
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Report to database DB';
         showToast('Error connecting to backend.', 'fa-circle-xmark');
       });
     });
@@ -1400,7 +1883,7 @@ try {
       e.preventDefault();
       const saveBtn = document.getElementById('saveProfileBtn');
       saveBtn.disabled = true;
-      saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving to tatang DB…';
+      saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving to database DB…';
 
       const formData = new FormData(this);
       formData.append('action', 'update');
@@ -1412,7 +1895,7 @@ try {
       .then(res => res.json())
       .then(data => {
         saveBtn.disabled = false;
-        saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes to tatang DB';
+        saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes to database DB';
 
         if (data.status === 'success') {
           profileNameEl.textContent = data.user.name;
@@ -1452,6 +1935,8 @@ try {
       6: { key: 'residual',      name: 'Residual',      color: '#1b659c', icon: 'fa-trash-can' }
     };
 
+    let currentSchedules = <?php echo json_encode($userSchedules); ?> || [];
+
     const today = new Date();
     let calYear  = today.getFullYear();
     let calMonth = today.getMonth();
@@ -1459,6 +1944,234 @@ try {
     const calendarGrid = document.getElementById('calendarGrid');
     const calMonthLabel = document.getElementById('calMonthLabel');
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function formatTime12(t) {
+      if (!t) return '';
+      const parts = t.split(':');
+      let h = parseInt(parts[0], 10);
+      const m = parts[1] || '00';
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12;
+      if (h === 0) h = 12;
+      return h + ':' + m + ' ' + ampm;
+    }
+
+    function formatTimeRange(start, end) {
+      if (!start) return '7:00 AM - 10:00 AM';
+      const s = formatTime12(start);
+      const e = end ? formatTime12(end) : '';
+      return e ? (s + ' - ' + e) : s;
+    }
+
+    function getCategoryStyle(slug) {
+      slug = (slug || '').toLowerCase();
+      if (slug.indexOf('bio') !== -1) return { key: 'biodegradable', name: 'Biodegradable', color: '#208e3a', icon: 'fa-leaf', ind: 'ind-green' };
+      if (slug.indexOf('recycle') !== -1 || slug.indexOf('recyclab') !== -1) return { key: 'recyclable', name: 'Recyclable', color: '#e8b32a', icon: 'fa-recycle', ind: 'ind-yellow' };
+      if (slug.indexOf('hazard') !== -1) return { key: 'hazardous', name: 'Hazardous', color: '#d64a3b', icon: 'fa-triangle-exclamation', ind: 'ind-red' };
+      return { key: 'residual', name: 'Residual', color: '#1b659c', icon: 'fa-trash-can', ind: 'ind-blue' };
+    }
+
+    // Function to calculate upcoming collection events from currentSchedules (including entered schedules & dates)
+    function getUpcomingCollectionEvents(daysAhead) {
+      daysAhead = daysAhead || 30;
+      const events = [];
+      const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+      // 1. Process specific date schedules
+      if (Array.isArray(currentSchedules)) {
+        currentSchedules.forEach(function (sc) {
+          if (sc.collection_date) {
+            const parts = sc.collection_date.split('-');
+            if (parts.length === 3) {
+              const sDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+              if (sDate >= startOfToday) {
+                const style = getCategoryStyle(sc.category_slug || sc.category_name);
+                events.push({
+                  date: sDate,
+                  timeLabel: formatTimeRange(sc.start_time, sc.end_time),
+                  route: sc.street_route || sc.barangay || '',
+                  categoryName: sc.category_name || style.name,
+                  categorySlug: sc.category_slug || style.key,
+                  color: sc.category_color || style.color,
+                  icon: sc.category_icon || style.icon,
+                  status: sc.status || 'Scheduled',
+                  isSpecificDate: true
+                });
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Process recurring day_of_week schedules for upcoming days
+      for (let i = 0; i < daysAhead; i++) {
+        const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+        const dow = d.getDay();
+
+        let matching = [];
+        if (Array.isArray(currentSchedules)) {
+          matching = currentSchedules.filter(function (sc) {
+            return !sc.collection_date && Number(sc.day_of_week) === dow;
+          });
+        }
+
+        matching.forEach(function (sc) {
+          const style = getCategoryStyle(sc.category_slug || sc.category_name);
+          // Check if an exact specific date for this category already added on this day
+          const exists = events.some(function (e) {
+            return e.date.getFullYear() === d.getFullYear() &&
+                   e.date.getMonth() === d.getMonth() &&
+                   e.date.getDate() === d.getDate() &&
+                   e.categorySlug === (sc.category_slug || style.key);
+          });
+          if (!exists) {
+            events.push({
+              date: new Date(d),
+              timeLabel: formatTimeRange(sc.start_time, sc.end_time),
+              route: sc.street_route || sc.barangay || '',
+              categoryName: sc.category_name || style.name,
+              categorySlug: sc.category_slug || style.key,
+              color: sc.category_color || style.color,
+              icon: sc.category_icon || style.icon,
+              status: sc.status || 'Scheduled',
+              isSpecificDate: false
+            });
+          }
+        });
+      }
+
+      // 3. Fallback if currentSchedules has no entries
+      if (events.length === 0) {
+        for (let i = 0; i < daysAhead; i++) {
+          const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+          const type = COLLECTION_TYPES[d.getDay()];
+          if (type) {
+            events.push({
+              date: new Date(d),
+              timeLabel: '7:00 AM - 10:00 AM',
+              route: document.getElementById('brgySelect') ? document.getElementById('brgySelect').value : 'Subabasbas',
+              categoryName: type.name,
+              categorySlug: type.key,
+              color: type.color,
+              icon: type.icon,
+              status: 'Scheduled',
+              isSpecificDate: false
+            });
+          }
+        }
+      }
+
+      // Sort chronologically
+      events.sort(function (a, b) {
+        return a.date.getTime() - b.date.getTime();
+      });
+
+      return events;
+    }
+
+    // Render the right sidebar upcoming list
+    function renderUpcoming() {
+      const container = document.getElementById('upcomingList');
+      if (!container) return;
+
+      const events = getUpcomingCollectionEvents(30).slice(0, 3);
+      if (events.length === 0) {
+        container.innerHTML = '<p style="font-size: 0.85rem; color: #888;">No upcoming collections scheduled.</p>';
+        return;
+      }
+
+      container.innerHTML = events.map(function (o) {
+        const isToday = (o.date.getDate() === today.getDate() && o.date.getMonth() === today.getMonth() && o.date.getFullYear() === today.getFullYear());
+        const isTomorrow = (o.date.getDate() === (today.getDate() + 1) && o.date.getMonth() === today.getMonth() && o.date.getFullYear() === today.getFullYear());
+
+        let badgePrefix = '';
+        if (isToday) badgePrefix = '<span style="color: #208e3a; font-weight: 700;">Today &bull; </span>';
+        else if (isTomorrow) badgePrefix = '<span style="color: #e8b32a; font-weight: 700;">Tomorrow &bull; </span>';
+
+        const label = badgePrefix + MONTH_NAMES[o.date.getMonth()].slice(0, 3) + ' ' + o.date.getDate() + ', ' + o.date.getFullYear() +
+                      ' &bull; ' + DAY_HEADERS[o.date.getDay()].charAt(0) + DAY_HEADERS[o.date.getDay()].slice(1).toLowerCase();
+
+        const routeText = o.route ? (' &bull; ' + escapeHtml(o.route)) : '';
+        const statusClass = (o.status === 'Completed') ? 'background:#e8f5e9;color:#2e7d32;' : ((o.status === 'In Progress') ? 'background:#e0f2fe;color:#0369a1;' : 'background:#f1f5f9;color:#475569;');
+        const statusBadge = o.status ? '<span style="display:inline-block; margin-left:6px; font-size:0.68rem; font-weight:700; padding:2px 6px; border-radius:4px; ' + statusClass + '">' + escapeHtml(o.status) + '</span>' : '';
+
+        return '<div class="upcoming-card">' +
+                 '<div class="upcoming-icon" style="background:' + o.color + ';">' +
+                   '<i class="fa-solid ' + o.icon + '"></i>' +
+                 '</div>' +
+                 '<div class="upcoming-info">' +
+                   '<h5>' + label + '</h5>' +
+                   '<p><strong>' + escapeHtml(o.categoryName) + '</strong>' + statusBadge + '<br>' +
+                      escapeHtml(o.timeLabel) + routeText +
+                   '</p>' +
+                 '</div>' +
+               '</div>';
+      }).join('');
+    }
+
+    // Render the View All Modal list
+    function renderAllUpcomingModal() {
+      const container = document.getElementById('allUpcomingList');
+      if (!container) return;
+
+      const events = getUpcomingCollectionEvents(45);
+      const brgySpan = document.getElementById('viewAllModalBrgy');
+      const curBrgy = document.getElementById('brgySelect') ? document.getElementById('brgySelect').value : '';
+      if (brgySpan && curBrgy) brgySpan.textContent = curBrgy;
+
+      if (events.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding:1.5rem; color:#888;">No upcoming collections found.</p>';
+        return;
+      }
+
+      container.innerHTML = events.map(function (o, index) {
+        const dateStr = MONTH_NAMES[o.date.getMonth()] + ' ' + o.date.getDate() + ', ' + o.date.getFullYear() + ' (' + DAY_HEADERS[o.date.getDay()] + ')';
+        const key = 'reminder_' + o.date.getFullYear() + '_' + (o.date.getMonth() + 1) + '_' + o.date.getDate() + '_' + o.categorySlug;
+        const isSet = !!savedReminders[key];
+        const btnClass = isSet ? 'reminder-btn done' : 'reminder-btn';
+        const btnText = isSet ? '<i class="fa-solid fa-check"></i> Reminder Set' : 'Set Reminder';
+
+        const statusClass = (o.status === 'Completed') ? 'background:#e8f5e9;color:#2e7d32;' : ((o.status === 'In Progress') ? 'background:#e0f2fe;color:#0369a1;' : 'background:#f1f5f9;color:#475569;');
+        const statusBadge = o.status ? '<span style="display:inline-block; margin-left:6px; font-size:0.68rem; font-weight:700; padding:1px 6px; border-radius:4px; ' + statusClass + '">' + escapeHtml(o.status) + '</span>' : '';
+
+        return '<div class="full-schedule-item" style="display:flex; align-items:center; justify-content:space-between; padding:0.8rem 1rem; border-bottom:1px solid #eee; background:#fff; border-radius:8px;">' +
+                 '<div style="display:flex; align-items:center; gap:0.9rem;">' +
+                   '<div class="center-icon" style="background:' + o.color + '22; color:' + o.color + '; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;">' +
+                     '<i class="fa-solid ' + o.icon + '"></i>' +
+                   '</div>' +
+                   '<div class="center-info">' +
+                     '<h5 style="margin:0; font-size:0.92rem; font-weight:700; color:#1a402b;">' + escapeHtml(o.categoryName) + statusBadge + '</h5>' +
+                     '<p style="margin:2px 0 0; font-size:0.78rem; color:#666;">' + dateStr + '<br>' + escapeHtml(o.timeLabel) + (o.route ? (' &bull; ' + escapeHtml(o.route)) : '') + '</p>' +
+                   '</div>' +
+                 '</div>' +
+                 '<button type="button" class="' + btnClass + '" data-reminder-key="' + key + '">' + btnText + '</button>' +
+               '</div>';
+      }).join('');
+
+      container.querySelectorAll('.reminder-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const k = this.getAttribute('data-reminder-key');
+          if (this.classList.contains('done')) {
+            this.classList.remove('done');
+            this.innerHTML = 'Set Reminder';
+            delete savedReminders[k];
+            showToast('Reminder removed', 'fa-bell-slash');
+          } else {
+            this.classList.add('done');
+            this.innerHTML = '<i class="fa-solid fa-check"></i> Reminder Set';
+            savedReminders[k] = true;
+            showToast('Reminder set for collection!', 'fa-bell');
+          }
+          try { localStorage.setItem('wastewise_schedule_reminders', JSON.stringify(savedReminders)); } catch(e){}
+        });
+      });
+    }
+
+    // Render Calendar Center Grid
     function renderCalendar() {
       calMonthLabel.textContent = MONTH_NAMES[calMonth] + ' ' + calYear;
 
@@ -1475,9 +2188,25 @@ try {
 
       for (let day = 1; day <= daysInMonth; day++) {
         const weekday = (firstWeekday + day - 1) % 7;
-        const type = COLLECTION_TYPES[weekday];
+        const curDateStr = calYear + '-' + String(calMonth + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
 
-        let ind = 'ind-green';
+        // Check if there is a specific date schedule or day of week schedule
+        let matchedSched = null;
+        if (Array.isArray(currentSchedules)) {
+          // Specific date priority
+          matchedSched = currentSchedules.find(function (sc) {
+            return sc.collection_date === curDateStr;
+          });
+          // Fallback to day of week
+          if (!matchedSched) {
+            matchedSched = currentSchedules.find(function (sc) {
+              return !sc.collection_date && Number(sc.day_of_week) === weekday;
+            });
+          }
+        }
+
+        let type = matchedSched ? getCategoryStyle(matchedSched.category_slug || matchedSched.category_name) : COLLECTION_TYPES[weekday];
+        let ind = type.ind || 'ind-green';
         if (type.key === 'recyclable') ind = 'ind-yellow';
         else if (type.key === 'residual') ind = 'ind-blue';
         else if (type.key === 'hazardous') ind = 'ind-red';
@@ -1487,7 +2216,10 @@ try {
                          calYear === today.getFullYear());
 
         html += '<div class="cal-date has-indicator ' + ind + (isToday ? ' today' : '') + '" ' +
-                     'data-day="' + day + '" data-wd="' + weekday + '">' + day + '</div>';
+                     'data-day="' + day + '" data-date="' + curDateStr + '" data-wd="' + weekday + '" ' +
+                     'data-cat="' + (matchedSched ? (matchedSched.category_name || type.name) : type.name) + '" ' +
+                     'data-icon="' + type.icon + '" data-time="' + (matchedSched ? formatTimeRange(matchedSched.start_time, matchedSched.end_time) : '7:00 AM - 10:00 AM') + '" ' +
+                     'data-route="' + (matchedSched && matchedSched.street_route ? matchedSched.street_route : '') + '">' + day + '</div>';
       }
 
       calendarGrid.innerHTML = html;
@@ -1497,9 +2229,17 @@ try {
           calendarGrid.querySelectorAll('.cal-date').forEach(function (c) { c.classList.remove('selected'); });
           cell.classList.add('selected');
 
-          const type = COLLECTION_TYPES[Number(cell.dataset.wd)];
-          showToast(MONTH_NAMES[calMonth] + ' ' + cell.dataset.day + ' · ' + type.name + ' collection',
-                    type.icon);
+          const catName = cell.dataset.cat;
+          const timeRange = cell.dataset.time;
+          const routeName = cell.dataset.route ? (' &bull; ' + cell.dataset.route) : '';
+          showToast(MONTH_NAMES[calMonth] + ' ' + cell.dataset.day + ' &bull; ' + catName + ' (' + timeRange + routeName + ')',
+                    cell.dataset.icon);
+
+          // Pre-fill date input if clicked
+          const dateInput = document.getElementById('newSchedDate');
+          if (dateInput && cell.dataset.date) {
+            dateInput.value = cell.dataset.date;
+          }
         });
       });
     }
@@ -1516,57 +2256,103 @@ try {
       renderCalendar();
     });
 
-    renderCalendar();
+    // Fetch and sync schedules for city & barangay
+    function fetchAndRenderSchedules(city, brgy) {
+      city = city || document.getElementById('citySelect').value;
+      brgy = brgy || document.getElementById('brgySelect').value;
+      document.getElementById('calendarSub').textContent = brgy + ', ' + city;
 
-    function renderUpcoming() {
-      const container = document.getElementById('upcomingList');
-      const out = [];
-      const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
-
-      while (out.length < 3) {
-        const type = COLLECTION_TYPES[d.getDay()];
-        out.push({
-          date: new Date(d),
-          type: type
+      return fetch('api/schedule.php?city=' + encodeURIComponent(city) + '&barangay=' + encodeURIComponent(brgy))
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data.status === 'success' && data.schedules && data.schedules.length > 0) {
+            currentSchedules = data.schedules;
+            renderUpcoming();
+            renderCalendar();
+            renderAllUpcomingModal();
+            showToast('Loaded ' + data.schedules.length + ' schedule routes for ' + brgy, 'fa-calendar-check');
+          } else {
+            renderUpcoming();
+            renderCalendar();
+            renderAllUpcomingModal();
+            showToast('Showing default weekly schedule for ' + brgy, 'fa-calendar-check');
+          }
+        })
+        .catch(function () {
+          renderUpcoming();
+          renderCalendar();
+          renderAllUpcomingModal();
+          showToast('Showing schedule for ' + brgy + ', ' + city, 'fa-calendar-check');
         });
-        d.setDate(d.getDate() + 1);
-      }
-
-      container.innerHTML = out.map(function (o) {
-        const label = MONTH_NAMES[o.date.getMonth()].slice(0, 3) + ' ' + o.date.getDate() + ', ' + o.date.getFullYear() +
-                      ' • ' + DAY_HEADERS[o.date.getDay()].charAt(0) + DAY_HEADERS[o.date.getDay()].slice(1).toLowerCase();
-        return '<div class="upcoming-card">' +
-                 '<div class="upcoming-icon" style="background:' + o.type.color + ';">' +
-                   '<i class="fa-solid ' + o.type.icon + '"></i>' +
-                 '</div>' +
-                 '<div class="upcoming-info">' +
-                   '<h5>' + label + '</h5>' +
-                   '<p><strong>' + o.type.name + '</strong><br>7:00 AM - 10:00 AM</p>' +
-                 '</div>' +
-               '</div>';
-      }).join('');
     }
-
-    renderUpcoming();
 
     document.getElementById('viewScheduleBtn').addEventListener('click', function () {
       const city = document.getElementById('citySelect').value;
       const brgy = document.getElementById('brgySelect').value;
-      document.getElementById('calendarSub').textContent = brgy + ', ' + city;
+      fetchAndRenderSchedules(city, brgy);
+    });
 
-      fetch('api/schedule.php?city=' + encodeURIComponent(city) + '&barangay=' + encodeURIComponent(brgy))
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === 'success' && data.schedules.length > 0) {
-            showToast('Loaded ' + data.schedules.length + ' schedule routes for ' + brgy, 'fa-calendar-check');
+    // Save newly entered schedule
+    const saveScheduleBtn = document.getElementById('saveScheduleBtn');
+    if (saveScheduleBtn) {
+      saveScheduleBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        const dateVal = document.getElementById('newSchedDate').value;
+        const catVal = document.getElementById('newSchedCat').value;
+        const streetVal = document.getElementById('newSchedStreet').value.trim();
+        const startVal = document.getElementById('newSchedStart').value || '07:00';
+        const endVal = document.getElementById('newSchedEnd').value || '10:00';
+        const city = document.getElementById('citySelect').value;
+        const brgy = document.getElementById('brgySelect').value;
+
+        if (!dateVal) {
+          showToast('Please select a collection date', 'fa-triangle-exclamation');
+          document.getElementById('newSchedDate').focus();
+          return;
+        }
+
+        saveScheduleBtn.disabled = true;
+        saveScheduleBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+        const formData = new FormData();
+        formData.append('action', 'add');
+        formData.append('city', city);
+        formData.append('barangay', brgy);
+        formData.append('street_route', streetVal);
+        formData.append('category_id', catVal);
+        formData.append('collection_date', dateVal);
+        formData.append('start_time', startVal);
+        formData.append('end_time', endVal);
+
+        fetch('api/schedule.php', {
+          method: 'POST',
+          body: formData
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (res) {
+          saveScheduleBtn.disabled = false;
+          saveScheduleBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Save Schedule';
+
+          if (res.status === 'success') {
+            showToast('New schedule entered for ' + dateVal + '!', 'fa-circle-check');
+            document.getElementById('newSchedStreet').value = '';
+            fetchAndRenderSchedules(city, brgy);
           } else {
-            showToast('Showing default weekly schedule for ' + brgy, 'fa-calendar-check');
+            showToast(res.message || 'Failed to save schedule', 'fa-triangle-exclamation');
           }
         })
-        .catch(() => {
-          showToast('Showing schedule for ' + brgy + ', ' + city, 'fa-calendar-check');
+        .catch(function (err) {
+          saveScheduleBtn.disabled = false;
+          saveScheduleBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Save Schedule';
+          showToast('Failed to save schedule', 'fa-triangle-exclamation');
         });
-    });
+      });
+    }
+
+    // Initial render
+    renderCalendar();
+    renderUpcoming();
+    renderAllUpcomingModal();
 
     let reminderOn = false;
     const reminderToggle = document.getElementById('reminderToggle');

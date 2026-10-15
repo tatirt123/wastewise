@@ -142,7 +142,7 @@ try {
             <p class="text-sm text-slate-500">Live oversight of municipal waste management &middot; Database: <span class="text-emerald-600 font-semibold">tatang</span></p>
         </div>
 
-        <!-- ROW 1 — Metric Cards from tatang DB -->
+        <!-- ROW 1 — Metric Cards from Database DB -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
             <!-- Total Users -->
@@ -155,7 +155,7 @@ try {
                         <p class="text-xs font-semibold text-slate-500">Total Registered Users</p>
                         <h2 class="text-[28px] leading-tight font-bold text-slate-900 mt-0.5"><?php echo number_format($totalUsers); ?></h2>
                         <p class="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
-                            <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> Live in tatang DB
+                            <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> Live in database
                         </p>
                     </div>
                 </div>
@@ -328,7 +328,7 @@ try {
                 </div>
 
                 <div class="pt-4 border-t border-slate-100 mt-4">
-                    <p class="text-[11px] text-slate-400">Live sync with municipal MySQL database tatang.</p>
+                    <p class="text-[11px] text-slate-400">Live sync with municipal MySQL database.</p>
                 </div>
             </div>
         </div>
@@ -336,12 +336,12 @@ try {
         <!-- ROW 3 — Recent Reports | Collection Schedule Management -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
 
-            <!-- Recent Reports from tatang DB -->
+            <!-- Recent Reports from database DB -->
             <div class="lg:col-span-5 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                 <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center space-x-2">
                         <i data-lucide="file-text" class="w-5 h-5 text-emerald-600"></i>
-                        <h3 class="font-bold text-slate-800">Recent Illegal Reports (tatang DB)</h3>
+                        <h3 class="font-bold text-slate-800">Recent Illegal Reports </h3>
                     </div>
                 </div>
                 <div class="overflow-x-auto">
@@ -384,12 +384,12 @@ try {
                 </div>
             </div>
 
-            <!-- Collection Schedule Management from tatang DB -->
+            <!-- Collection Schedule Management from database DB -->
             <div class="lg:col-span-7 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                 <div class="flex items-center justify-between mb-3 gap-2">
                     <div class="flex items-center space-x-2 min-w-0">
                         <i data-lucide="calendar" class="w-5 h-5 text-emerald-600 shrink-0"></i>
-                        <h3 class="font-bold text-slate-800 text-sm truncate">Collection Schedule Management (tatang DB)</h3>
+                        <h3 class="font-bold text-slate-800 text-sm truncate">Collection Schedule Management </h3>
                     </div>
                 </div>
                 <div class="overflow-x-auto">

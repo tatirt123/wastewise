@@ -60,6 +60,8 @@ if ($action === 'submit') {
             'report_id' => $newReportId,
             'total_reports' => $count,
             'location' => $location,
+            'waste_type' => $wasteType,
+            'photo_url' => $photoUrl ? $photoUrl : 'uploads/reports/default-report.jpg',
             'action_text' => $actionText,
             'date_formatted' => 'Just now'
         ]);

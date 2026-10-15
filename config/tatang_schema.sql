@@ -119,7 +119,12 @@ INSERT INTO `collection_schedules` (`id`, `city`, `barangay`, `street_route`, `w
 (4, 'Lapu-Lapu City', 'Subabasbas', 'Aguinaldo St.', 2, 4, '09:00:00', '12:00:00', 'Pending', 4),
 (5, 'Lapu-Lapu City', 'Subabasbas', 'Mabini St.', 3, 3, '07:00:00', '10:00:00', 'In Progress', 3),
 (6, 'Lapu-Lapu City', 'Subabasbas', 'Mabini St.', 3, 6, '07:00:00', '10:00:00', 'Scheduled', 3),
-(7, 'Lapu-Lapu City', 'Subabasbas', 'OSMEÑA Rd.', 4, 5, '08:00:00', '11:00:00', 'Pending', 5);
+(7, 'Lapu-Lapu City', 'Subabasbas', 'OSMEÑA Rd.', 4, 5, '08:00:00', '11:00:00', 'Pending', 5),
+(101, 'North District', 'North District', 'Banilad', 1, 1, '08:00:00', '08:45:00', 'Completed', 1),
+(102, 'North District', 'North District', 'Talamban', 2, 1, '08:45:00', '09:30:00', 'Completed', 2),
+(103, 'North District', 'North District', 'Pari-an', 3, 1, '09:30:00', '10:15:00', 'In Progress', 3),
+(104, 'North District', 'North District', 'Busay', 2, 1, '10:15:00', '11:00:00', 'Pending', 4),
+(105, 'North District', 'North District', 'Guadalupe', 4, 1, '11:00:00', '12:00:00', 'Pending', 5);
 
 -- --------------------------------------------------------
 -- Table structure for `illegal_reports`

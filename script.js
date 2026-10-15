@@ -219,34 +219,124 @@
       });
     });
 
+    /* ====== CATEGORY SECTION NAVIGATION ====== */
+    function openCategory(categoryId) {
+      if (!categoryId) return;
+      const key = categoryId.toLowerCase();
+
+      // Hide all category sections first
+      document.querySelectorAll('.category-section').forEach(function (sec) {
+        sec.style.display = 'none';
+        sec.classList.remove('show');
+      });
+
+      const target = document.getElementById('section-' + key);
+      if (target) {
+        const browseWrap = document.getElementById('browseCategoryWrap');
+        if (browseWrap) browseWrap.style.display = 'none';
+        const searchRes = document.getElementById('searchResult');
+        if (searchRes) searchRes.style.display = 'none';
+
+        target.style.display = 'block';
+        target.classList.add('show');
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+    window.openCategory = openCategory;
+
+    function goHome() {
+      // Hide all category sections
+      document.querySelectorAll('.category-section').forEach(function (sec) {
+        sec.style.display = 'none';
+        sec.classList.remove('show');
+      });
+
+      // Restore browse cards and default detail box
+      const browseWrap = document.getElementById('browseCategoryWrap');
+      if (browseWrap) browseWrap.style.display = 'block';
+      const searchRes = document.getElementById('searchResult');
+      if (searchRes) searchRes.style.display = 'block';
+
+      const searchSection = document.getElementById('search-result');
+      if (searchSection) {
+        searchSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      const searchInput = document.getElementById('wiseSearchInput');
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+    }
+    window.goHome = goHome;
+
     function searchWaste(rawQuery) {
       const q = (rawQuery || '').trim().toLowerCase();
       if (!q) {
-        showToast('Type an item to search — e.g. "battery"', 'fa-circle-info');
+        showToast('Type an item or category to search — e.g. "plastic", "battery", "biodegradable"', 'fa-circle-info');
         return;
       }
 
-      let foundKey = null;
-      Object.keys(wasteDB).some(function (key) {
-        const item = wasteDB[key];
-        const name = item.name.toLowerCase();
-
-        if (name === q || name.indexOf(q) !== -1 || q.indexOf(name) !== -1) {
-          foundKey = key; return true;
-        }
-        const hit = item.keywords.some(function (k) {
-          return k === q || (k.length > 2 && q.indexOf(k) !== -1) || (q.length > 2 && k.indexOf(q) !== -1);
-        });
-        if (hit) { foundKey = key; return true; }
-        return false;
-      });
-
-      if (foundKey) {
-        renderItem(foundKey);
-        showToast('Found: ' + wasteDB[foundKey].name, 'fa-magnifying-glass');
-      } else {
-        showToast('No match — try "bottle", "battery", "peel"…', 'fa-circle-question');
+      // 1. Direct match with category names or aliases
+      let matchedCategory = null;
+      if (q === 'biodegradable' || q === 'bio' || q === 'organic' || q.indexOf('biodegradable') !== -1 || q.indexOf('organic') !== -1) {
+        matchedCategory = 'biodegradable';
+      } else if (q === 'recyclable' || q === 'recycle' || q === 'recyclables' || q.indexOf('recyclab') !== -1) {
+        matchedCategory = 'recyclable';
+      } else if (q === 'residual' || q === 'non-recyclable' || q.indexOf('residual') !== -1) {
+        matchedCategory = 'residual';
+      } else if (q === 'hazardous' || q === 'hazard' || q === 'toxic' || q.indexOf('hazard') !== -1 || q.indexOf('toxic') !== -1) {
+        matchedCategory = 'hazardous';
       }
+
+      // 2. If not a direct category name, look up in local wasteDB
+      if (!matchedCategory) {
+        let foundKey = null;
+        Object.keys(wasteDB).some(function (key) {
+          const item = wasteDB[key];
+          const name = item.name.toLowerCase();
+
+          if (name === q || name.indexOf(q) !== -1 || q.indexOf(name) !== -1) {
+            foundKey = key; return true;
+          }
+          const hit = item.keywords.some(function (k) {
+            const kl = k.toLowerCase();
+            return kl === q || (kl.length > 2 && q.indexOf(kl) !== -1) || (q.length > 2 && kl.indexOf(q) !== -1);
+          });
+          if (hit) { foundKey = key; return true; }
+          return false;
+        });
+
+        if (foundKey && wasteDB[foundKey].catKey) {
+          matchedCategory = wasteDB[foundKey].catKey;
+        }
+      }
+
+      // 3. Fallback keywords dictionary for common waste items
+      if (!matchedCategory) {
+        const categoryKeywords = {
+          biodegradable: ['banana', 'peel', 'food', 'leaves', 'leaf', 'vegetable', 'fruit', 'apple', 'bread', 'compost', 'plants', 'meat', 'egg', 'fish', 'rice', 'leftover', 'garden', 'grass', 'coffee'],
+          recyclable: ['bottle', 'plastic', 'can', 'tin', 'paper', 'cardboard', 'glass', 'box', 'carton', 'newspaper', 'metal', 'aluminum', 'jar', 'magazine'],
+          residual: ['diaper', 'napkin', 'styrofoam', 'sachet', 'wrapper', 'ceramics', 'sanitary', 'straw', 'candy', 'cigarette', 'tissue', 'cotton', 'plastic bag', 'single-use', 'cellophane', 'straws'],
+          hazardous: ['battery', 'batteries', 'chemical', 'paint', 'bulb', 'fluorescent', 'mercury', 'electronics', 'e-waste', 'ewaste', 'medicine', 'pesticide', 'spray', 'thermometer', 'solvent', 'cleaning']
+        };
+
+        for (const cat in categoryKeywords) {
+          const words = categoryKeywords[cat];
+          if (words.some(function (w) { return q.indexOf(w) !== -1 || w.indexOf(q) !== -1; })) {
+            matchedCategory = cat;
+            break;
+          }
+        }
+      }
+
+      // 4. If matched, open that category section!
+      if (matchedCategory) {
+        openCategory(matchedCategory);
+        showToast('Opened ' + (CATEGORY_STYLE[matchedCategory] ? CATEGORY_STYLE[matchedCategory].label : matchedCategory) + ' category', 'fa-folder-open');
+        return;
+      }
+
+      showToast('No category match — try "bottle", "battery", "peel" or category name', 'fa-circle-question');
     }
 
     document.getElementById('wiseSearchBtn').addEventListener('click', function () {
@@ -258,6 +348,14 @@
         e.preventDefault();
         searchWaste(this.value);
       }
+    });
+
+    // Clicking browse category cards directly opens the category section
+    document.querySelectorAll('.browse-card[data-guide]').forEach(function (card) {
+      card.addEventListener('click', function (e) {
+        e.preventDefault();
+        openCategory(this.dataset.guide);
+      });
     });
 
     renderItem('plasticBottle');
@@ -354,7 +452,7 @@
       }
     }
 
-    document.querySelectorAll('[data-guide]').forEach(function (btn) {
+    document.querySelectorAll('[data-guide]:not(.browse-card)').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.preventDefault();
         openGuide(btn.dataset.guide);
@@ -438,15 +536,46 @@
       });
     }
 
-    document.querySelectorAll('.reminder-btn').forEach(function (btn) {
+    // Schedule collection reminder buttons
+    let savedReminders = {};
+    try {
+      savedReminders = JSON.parse(localStorage.getItem('wastewise_schedule_reminders') || '{}');
+    } catch (e) {
+      savedReminders = {};
+    }
+
+    document.querySelectorAll('.reminder-btn').forEach(function (btn, index) {
+      const parent = btn.closest('.full-schedule-item');
+      const title = parent && parent.querySelector('h5') ? parent.querySelector('h5').textContent.trim() : ('Collection #' + (index + 1));
+      const key = title.toLowerCase().replace(/\s+/g, '_');
+
+      if (savedReminders[key]) {
+        btn.classList.add('done');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Reminder Set';
+      }
+
       btn.addEventListener('click', function () {
         if (this.classList.contains('done')) {
-          showToast('Reminder already set', 'fa-circle-info');
-          return;
+          this.classList.remove('done');
+          this.innerHTML = 'Set Reminder';
+          delete savedReminders[key];
+          try {
+            localStorage.setItem('wastewise_schedule_reminders', JSON.stringify(savedReminders));
+          } catch (err) {}
+          showToast('Reminder removed for ' + title, 'fa-bell-slash');
+        } else {
+          this.classList.add('done');
+          this.innerHTML = '<i class="fa-solid fa-check"></i> Reminder Set';
+          savedReminders[key] = true;
+          try {
+            localStorage.setItem('wastewise_schedule_reminders', JSON.stringify(savedReminders));
+          } catch (err) {}
+          showToast('Reminder set for ' + title, 'fa-bell');
+
+          if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+          }
         }
-        this.classList.add('done');
-        this.textContent = 'Reminder Set';
-        showToast('Reminder set for this collection', 'fa-bell');
       });
     });
 

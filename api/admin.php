@@ -184,7 +184,7 @@ if ($action === 'add_schedule') {
 if ($action === 'update_schedule') {
     $scheduleId = (int)($_POST['schedule_id'] ?? 0);
     $newStatus  = trim($_POST['status'] ?? '');
-    $allowed    = ['Scheduled', 'In Progress', 'Completed', 'Cancelled'];
+    $allowed    = ['Scheduled', 'In Progress', 'Completed', 'Cancelled', 'Pending'];
 
     if (!$scheduleId || !in_array($newStatus, $allowed)) {
         echo json_encode(['status' => 'error', 'message' => 'Invalid schedule or status.']);
