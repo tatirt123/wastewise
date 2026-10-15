@@ -55,7 +55,7 @@ The `login.php`, `dasboard.php`, `ind2.php`, and `ind3x.php` files are compatibi
 │   ├── db.php            PDO connection and session helpers
 │   ├── setup_db.php      Database initialization and sample-data seeder
 │   └── tatang_schema.sql SQL schema/data dump
-├── uploads/              Runtime user uploads; ignored by Git
+├── uploads/              Runtime user uploads; ignored by 
 ├── admin.php
 ├── collector.php
 ├── dashboard.php

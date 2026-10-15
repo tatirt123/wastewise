@@ -529,7 +529,7 @@ try {
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-2">
                             <i class="fa-solid fa-triangle-exclamation text-red-500 text-base"></i>
-                            <h2 class="font-bold text-slate-800 text-base">Illegal Report Notifications</h2>
+                            <h2 class="font-bold text-slate-800 text-base">Ilegal Report Notifications</h2>
                         </div>
                         <span class="text-xs font-bold text-slate-400">Database Auth</span>
                     </div>
